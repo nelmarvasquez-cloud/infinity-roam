@@ -73,7 +73,7 @@ function initPayPal() {
         const order = await actions.order.capture();
         const transactionId = generateTopupTransactionId();
 
-        const result = await ZenditAPI.purchaseTopup(offerId, recipientPhone, transactionId);
+        const result = await ZenditAPI.purchaseTopup(offerId, recipientPhone, transactionId, null, order.id);
 
         // Registrar el pedido ANTES de redirigir — el webhook de Zendit
         // (topup-webhook.js) necesita encontrar esta fila para saber a

@@ -6,6 +6,8 @@
 // ============================================================
 
 const https = require("https");
+const { corsHeaders, internalHeaders, rateLimited, clientIp } = require("./lib/security");
+const paypal = require("./lib/paypal-verify");
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -67,6 +69,7 @@ async function sendEmail({ to_email, to_name, subject, html_body, message }) {
       headers: {
         "Content-Type": "application/json",
         "Content-Length": Buffer.byteLength(payload),
+        ...internalHeaders(),
       },
     }, (res) => {
       let d = ""; res.on("data", c => d += c);
@@ -86,8 +89,11 @@ function randomToken(len = 24) {
 }
 
 // ── Main handler ─────────────────────────────────────────────
+let RESP_HEADERS = headers;
 exports.handler = async function (event) {
-  if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
+  RESP_HEADERS = { ...headers, ...corsHeaders(event) };
+  if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers: RESP_HEADERS, body: "" };
+  if (rateLimited("ref:" + clientIp(event), 60, 60000)) return res(429, { error: "Demasiadas solicitudes" });
 
   const action = event.queryStringParameters?.action;
   let body = {};
@@ -97,6 +103,7 @@ exports.handler = async function (event) {
   if (action === "validate") {
     const code = (body.code || "").toUpperCase().trim();
     if (!code) return res(400, { error: "Código requerido" });
+    if (!/^[A-Z0-9_-]{2,40}$/.test(code)) return res(400, { error: "Código de referido inválido o inactivo" });
 
     const r = await supabase("GET", `referrers?code=eq.${code}&status=eq.active&select=id,name,code,credit_balance`);
     if (!r.data || r.data.length === 0)
@@ -206,15 +213,33 @@ exports.handler = async function (event) {
 
   // ── REGISTER REFERRAL USE after purchase (public, called from confirmation) ──
   if (action === "register-use") {
-    const { referral_code, buyer_email, order_id, sale_amount } = body;
+    const { referral_code, buyer_email, order_id } = body;
+    let sale_amount = Number(body.sale_amount);
     if (!referral_code || !buyer_email || !order_id || !sale_amount)
       return res(400, { error: "Datos incompletos" });
 
-    const code = referral_code.toUpperCase().trim();
+    const code = String(referral_code).toUpperCase().trim();
+    if (!/^[A-Z0-9_-]{2,40}$/.test(code)) return res(400, { error: "Código no encontrado" });
+    if (!/^[A-Za-z0-9-]{8,64}$/.test(String(order_id))) return res(400, { error: "Pedido inválido" });
+
+    // Seguridad (Fase 1): el monto sale de PayPal, no del navegador, y cada
+    // pedido solo puede generar crédito una vez.
+    if (paypal.isConfigured()) {
+      let pay;
+      try { pay = await paypal.getPaidAmount(order_id); } catch (e) { return res(503, { error: "No se pudo verificar el pago" }); }
+      if (!pay.ok) return res(402, { error: "Pago no verificado", reason: pay.reason });
+      sale_amount = pay.paid;
+    } else if (!(sale_amount > 0 && sale_amount <= 2000)) {
+      return res(400, { error: "Monto inválido" });
+    }
+    const dup = await supabase("GET", `referral_uses?order_id=eq.${encodeURIComponent(order_id)}&select=id`);
+    if (dup.data && dup.data.length > 0) return res(200, { ok: true, duplicate: true, credit_earned: 0 });
+
     const r = await supabase("GET", `referrers?code=eq.${code}&status=eq.active&select=id,name,email,paypal_email,credit_balance,credit_pct`);
     if (!r.data || r.data.length === 0) return res(400, { error: "Código no encontrado" });
 
     const referrer = r.data[0];
+    const selfReferral = String(buyer_email).trim().toLowerCase() === String(referrer.email || "").trim().toLowerCase();
 
     // % efectivo: usa el personalizado del referido si existe, siempre topado
     // por seguridad — nunca puede superar MAX_CUSTOM_CREDIT_PCT aunque el
@@ -225,7 +250,7 @@ exports.handler = async function (event) {
 
     // Precio con descuento ya aplicado es sale_amount
     // Solo generar crédito si el monto pagado >= umbral mínimo
-    const earnsCredit = sale_amount >= REFERRAL_CREDIT_MIN;
+    const earnsCredit = !selfReferral && sale_amount >= REFERRAL_CREDIT_MIN;
     const credit = earnsCredit
       ? Math.round(sale_amount * effectivePct * 100) / 100
       : 0;
@@ -562,5 +587,5 @@ exports.handler = async function (event) {
 };
 
 function res(statusCode, body) {
-  return { statusCode, headers, body: JSON.stringify(body) };
+  return { statusCode, headers: RESP_HEADERS, body: JSON.stringify(body) };
 }

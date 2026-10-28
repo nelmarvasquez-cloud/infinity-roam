@@ -12,6 +12,7 @@
 // momento enviamos el correo. Más simple y más confiable.
 
 const https = require("https");
+const { internalHeaders } = require("./lib/security");
 const { supabase } = require("./lib/supabase-client");
 
 const SITE_HOST = "infinity-roam.com";
@@ -21,7 +22,7 @@ function httpsPostJson(hostname, path, body) {
     const payload = JSON.stringify(body);
     const req = https.request({
       hostname, path, method: "POST",
-      headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(payload) },
+      headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(payload), ...internalHeaders() },
     }, (res) => {
       let data = "";
       res.on("data", (c) => { data += c; });

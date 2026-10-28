@@ -505,7 +505,7 @@ function initPayPal() {
           let created = false;
           for (let attempt = 1; attempt <= 2 && !created; attempt++) {
             try {
-              await ZenditAPI.purchaseESIM(offerId, unitId);
+              await ZenditAPI.purchaseESIM(offerId, unitId, order.id);
               created = true;
             } catch (unitErr) {
               console.error(`[Checkout] Error creando compra Zendit para ${unitId} (intento ${attempt}):`, unitErr);

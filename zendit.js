@@ -3,9 +3,9 @@
 // ============================================================
 
 const ZenditAPI = {
-  async _call(path, method = "GET", bodyData = null) {
+  async _call(path, method = "GET", bodyData = null, extraHeaders = {}) {
     const url = `/.netlify/functions/zendit?path=${encodeURIComponent(path)}`;
-    const options = { method, headers: { "Content-Type": "application/json" } };
+    const options = { method, headers: { "Content-Type": "application/json", ...extraHeaders } };
     if (bodyData) options.body = JSON.stringify(bodyData);
     const response = await fetch(url, options);
     if (!response.ok) {
@@ -21,8 +21,9 @@ const ZenditAPI = {
   async getOffer(offerId) {
     return this._call(`/esim/offers/${offerId}`);
   },
-  async purchaseESIM(offerId, transactionId) {
-    return this._call("/esim/purchases", "POST", { offerId, transactionId });
+  async purchaseESIM(offerId, transactionId, paypalOrderId) {
+    // El servidor verifica con PayPal que este pedido esté pagado (Fase 1 seguridad)
+    return this._call("/esim/purchases", "POST", { offerId, transactionId }, { "X-PayPal-Order-Id": paypalOrderId || "" });
   },
   async getQRCode(transactionId) {
     return this._call(`/esim/purchases/${transactionId}/qrcode`);
@@ -43,10 +44,10 @@ const ZenditAPI = {
   async getTopupOffer(offerId) {
     return this._call(`/topups/offers/${offerId}`);
   },
-  async purchaseTopup(offerId, recipientPhoneNumber, transactionId, value) {
+  async purchaseTopup(offerId, recipientPhoneNumber, transactionId, value, paypalOrderId) {
     const body = { offerId, recipientPhoneNumber, transactionId };
     if (value) body.value = value; // { type: "PRICE", value: <monto> } — solo para ofertas RANGE
-    return this._call("/topups/purchases", "POST", body);
+    return this._call("/topups/purchases", "POST", body, { "X-PayPal-Order-Id": paypalOrderId || "" });
   },
   async getTopupTransaction(transactionId) {
     return this._call(`/topups/purchases/${transactionId}`);
