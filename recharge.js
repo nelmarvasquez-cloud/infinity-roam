@@ -160,10 +160,22 @@
     operatorGrid.innerHTML = `<div class="topup-loading">Buscando operadoras disponibles...</div>`;
 
     try {
-      const data = await ZenditAPI.getTopupOffers({ country: countryCode, limit: 100, subType: "Mobile Top Up" });
+      // Paginación: algunos países tienen más de 100 ofertas; se piden todas
+      // las páginas (tope de seguridad: 10 páginas = 1000 ofertas) y se
+      // eliminan duplicados por offerId.
+      const PAGE = 100, MAX_PAGES = 10;
+      const rawOffers = [];
+      const seen = new Set();
+      for (let page = 0; page < MAX_PAGES; page++) {
+        const data = await ZenditAPI.getTopupOffers({ country: countryCode, limit: PAGE, offset: page * PAGE, subType: "Mobile Top Up" });
+        const list = data.list || [];
+        list.forEach((o) => { if (!seen.has(o.offerId)) { seen.add(o.offerId); rawOffers.push(o); } });
+        const total = Number(data.total) || 0;
+        if (list.length < PAGE || (total && (page + 1) * PAGE >= total)) break;
+      }
       // v1: solo ofertas de precio FIJO — las de monto variable (RANGE)
       // necesitan un selector de monto propio, pendiente para una v2.
-      allOffersForCountry = (data.list || []).filter((o) => o.priceType === "FIXED" && o.enabled !== false);
+      allOffersForCountry = rawOffers.filter((o) => o.priceType === "FIXED" && o.enabled !== false);
 
       if (!allOffersForCountry.length) {
         operatorGrid.innerHTML = `<div class="topup-empty">No encontramos recargas de monto fijo para este país por ahora.</div>`;
