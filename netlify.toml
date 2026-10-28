@@ -1,5 +1,6 @@
 [build]
   functions = "netlify/functions"
+  command = "node build-topup-countries.js"
 
 [functions]
   node_bundler = "esbuild"
