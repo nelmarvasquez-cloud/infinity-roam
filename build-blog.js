@@ -283,10 +283,10 @@ function renderIndex(all) {
 const STATIC_PAGES = [
   ["/", "weekly", "1.0"], ["/catalog.html", "daily", "0.9"], ["/recharge.html", "weekly", "0.7"],
   ["/compatibility.html", "monthly", "0.6"], ["/my-esim.html", "monthly", "0.5"],
-  // Guías (la de China queda fuera hasta verificar su promesa sobre VPN/Google)
+  // Guías (China verificada por el dueño con una eSIM en el país)
   ["/guias/", "monthly", "0.7"], ["/guias/que-es-esim.html", "monthly", "0.7"],
   ["/guias/esim-espana.html", "monthly", "0.7"], ["/guias/esim-europa.html", "monthly", "0.7"],
-  ["/guias/esim-japon.html", "monthly", "0.7"], ["/guias/esim-usa.html", "monthly", "0.7"],
+  ["/guias/esim-china.html", "monthly", "0.7"], ["/guias/esim-japon.html", "monthly", "0.7"], ["/guias/esim-usa.html", "monthly", "0.7"],
 ];
 function renderSitemap(all) {
   const today = new Date().toISOString().slice(0, 10);
