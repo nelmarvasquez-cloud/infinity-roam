@@ -5,6 +5,7 @@
 // ============================================================
 
 const nodemailer = require("nodemailer");
+const { isInternal } = require("./lib/security");
 
 const SMTP_USER = process.env.GODADDY_SMTP_USER;   // nelmar.vasquez@infinity-roam.com
 const SMTP_PASS = process.env.GODADDY_SMTP_PASS;   // contraseña de tu cuenta
@@ -12,13 +13,15 @@ const FROM_EMAIL = "sales@infinity-roam.com";
 const FROM_NAME  = "Infinity Roam";
 
 const headers = {
-  "Access-Control-Allow-Origin": "*",
   "Content-Type": "application/json",
 };
 
 exports.handler = async function (event) {
   if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
   if (event.httpMethod !== "POST")    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
+  // Fase 1: ningún código del sitio llama a esta función desde el navegador;
+  // quedaba abierta como relay de correo desde sales@. Solo uso interno.
+  if (!isInternal(event)) return { statusCode: 403, headers, body: JSON.stringify({ error: "forbidden" }) };
 
   try {
     const { to_email, to_name, subject, html_body } = JSON.parse(event.body || "{}");
