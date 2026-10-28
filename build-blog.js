@@ -217,7 +217,7 @@ function layout({ title, description, canonical, ogImage, ogType, jsonLd, body, 
 <body>
 <nav class="nav"><a href="/" class="nav-logo">Infinity <span>Roam</span></a><a href="/catalog.html" class="nav-cta">View plans →</a></nav>
 ${body}
-<footer><p>© 2026 Infinity Roam · <a href="/">Home</a> · <a href="/catalog.html">Plans</a> · <a href="/blog/">Blog</a></p></footer>
+<footer><p>© 2026 Infinity Roam · <a href="/">Home</a> · <a href="/catalog.html">Plans</a> · <a href="/guias/">Guías</a> · <a href="/blog/">Blog</a></p></footer>
 </body>
 </html>
 `;
@@ -283,6 +283,10 @@ function renderIndex(all) {
 const STATIC_PAGES = [
   ["/", "weekly", "1.0"], ["/catalog.html", "daily", "0.9"], ["/recharge.html", "weekly", "0.7"],
   ["/compatibility.html", "monthly", "0.6"], ["/my-esim.html", "monthly", "0.5"],
+  // Guías (la de China queda fuera hasta verificar su promesa sobre VPN/Google)
+  ["/guias/", "monthly", "0.7"], ["/guias/que-es-esim.html", "monthly", "0.7"],
+  ["/guias/esim-espana.html", "monthly", "0.7"], ["/guias/esim-europa.html", "monthly", "0.7"],
+  ["/guias/esim-japon.html", "monthly", "0.7"], ["/guias/esim-usa.html", "monthly", "0.7"],
 ];
 function renderSitemap(all) {
   const today = new Date().toISOString().slice(0, 10);
