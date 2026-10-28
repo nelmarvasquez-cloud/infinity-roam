@@ -12,7 +12,13 @@
 //  que ya usa el catálogo de eSIM (archivos JSON pre-calculados,
 //  en vez de consultar a Zendit en cada visita).
 //
-//  CÓMO CORRERLO (igual que verify-topup-catalog.js):
+//  AUTOMÁTICO: netlify.toml lo ejecuta en CADA deploy de Netlify
+//  (build command) usando ZENDIT_API_KEY de las variables de entorno,
+//  así la lista se actualiza sola. Si Zendit falla o la clave no está
+//  disponible en el build, NO rompe el deploy: conserva el archivo
+//  topup_countries.json que ya está en el repositorio.
+//
+//  CÓMO CORRERLO A MANO:
 //
 //    cd carpeta-del-proyecto
 //    export ZENDIT_API_KEY="tu-api-key-real-de-produccion"
@@ -29,18 +35,36 @@
 // ============================================================
 
 const https = require("https");
+const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const ZENDIT_KEY = process.env.ZENDIT_API_KEY;
+const RAW_KEY = (process.env.ZENDIT_API_KEY || "").trim();
+// Zendit exige "Authorization: Bearer <clave>". Si la variable ya trae el
+// prefijo "Bearer " se respeta; si no, se agrega.
+const ZENDIT_KEY = RAW_KEY && !/^Bearer /i.test(RAW_KEY) ? "Bearer " + RAW_KEY : RAW_KEY;
 const ZENDIT_BASE = process.env.ZENDIT_BASE_URL || "https://api.zendit.io/v1";
 const CONCURRENCY = Number(process.env.CONCURRENCY || 5);
 const DELAY_MS = Number(process.env.DELAY_MS || 150); // pequeño respiro entre tandas
 
+// Dentro de un build de Netlify (o con SKIP_ON_MISSING_KEY=1) la falta de
+// clave no debe romper el deploy: se conserva el archivo existente.
+const SOFT_FAIL = process.env.NETLIFY === "true" || process.env.SKIP_ON_MISSING_KEY === "1";
 if (!ZENDIT_KEY) {
-  console.error("❌ Falta ZENDIT_API_KEY. Ejemplo:\n   export ZENDIT_API_KEY=\"tu-api-key\"\n   node build-topup-countries.js");
+  if (SOFT_FAIL) {
+    console.warn("⚠️  [topup-countries] ZENDIT_API_KEY no disponible en este build: se conserva topup_countries.json existente.");
+    process.exit(0);
+  }
+  console.error("❌ Falta ZENDIT_API_KEY. Ejemplo:\n   read -s ZENDIT_API_KEY; export ZENDIT_API_KEY\n   node build-topup-countries.js");
   process.exit(1);
 }
+
+// Tope de seguridad: un build nunca debe quedarse esperando a Zendit.
+const MAX_TOTAL_MS = Number(process.env.MAX_TOTAL_MS || 240000);
+setTimeout(() => {
+  console.warn("⚠️  [topup-countries] Tiempo máximo alcanzado: se conserva topup_countries.json existente.");
+  process.exit(0);
+}, MAX_TOTAL_MS).unref();
 
 // ── Cargar la lista real de países desde countries.js (misma fuente
 //    que usa recharge.js en el navegador — no se inventa una lista nueva) ──
@@ -61,9 +85,10 @@ function loadCountryCodes() {
 
 function httpsGetJson(url) {
   return new Promise((resolve, reject) => {
-    const req = https.request(
+    const lib = url.startsWith("http://") ? http : https;
+    const req = lib.request(
       url,
-      { method: "GET", headers: { Authorization: "Bearer " + ZENDIT_KEY, "Content-Type": "application/json" } },
+      { method: "GET", timeout: 15000, headers: { Authorization: ZENDIT_KEY, "Content-Type": "application/json" } },
       (res) => {
         const chunks = [];
         res.on("data", (c) => chunks.push(c));
@@ -77,6 +102,7 @@ function httpsGetJson(url) {
         });
       }
     );
+    req.on("timeout", () => req.destroy(new Error("timeout")));
     req.on("error", reject);
     req.end();
   });
@@ -124,7 +150,23 @@ async function main() {
   });
 
   const outPath = path.join(__dirname, "topup_countries.json");
-  fs.writeFileSync(outPath, JSON.stringify(available, null, 2));
+
+  // Protección: si Zendit respondió mal (muchos errores o casi ningún país),
+  // NO se sobrescribe el archivo — mejor una lista algo vieja que una vacía
+  // (una lista vacía ocultaría todos los países en la página de recargas).
+  const MIN_COUNTRIES = Number(process.env.MIN_COUNTRIES || 20);
+  const errorRate = errors.length / codes.length;
+  if (errorRate > 0.1 || Object.keys(available).length < MIN_COUNTRIES) {
+    console.warn(`⚠️  [topup-countries] Resultado poco confiable (errores: ${errors.length}/${codes.length}, países con recarga: ${Object.keys(available).length}). Se conserva topup_countries.json existente.`);
+    if (errors.length) errors.slice(0, 5).forEach((e) => console.warn(`   ${e.code}: ${e.error}`));
+    process.exit(SOFT_FAIL ? 0 : 1);
+  }
+
+  const sorted = Object.fromEntries(Object.entries(available).sort((a, b) => a[0].localeCompare(b[0])));
+  const text = JSON.stringify(sorted, null, 2) + "\n";
+  const before = fs.existsSync(outPath) ? fs.readFileSync(outPath, "utf8") : "";
+  if (before !== text) fs.writeFileSync(outPath, text);
+  console.log(before === text ? "Sin cambios en topup_countries.json." : "topup_countries.json actualizado.");
 
   console.log(`✅ Países CON recarga disponible: ${Object.keys(available).length}`);
   console.log(`⛔ Países SIN recarga disponible: ${unavailable.length}`);
@@ -137,4 +179,7 @@ async function main() {
   }
 }
 
-main();
+main().catch((err) => {
+  console.warn("⚠️  [topup-countries] Error inesperado:", err.message, "— se conserva topup_countries.json existente.");
+  process.exit(SOFT_FAIL ? 0 : 1);
+});
