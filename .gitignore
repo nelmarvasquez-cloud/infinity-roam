@@ -7,3 +7,7 @@ zendit_esim_offers_raw.json
 node_modules/
 .DS_Store
 .netlify/
+
+# Generados en cada build por build-blog.js
+/blog/
+/blog_data/
