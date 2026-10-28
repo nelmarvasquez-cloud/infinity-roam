@@ -1,6 +1,6 @@
 [build]
   functions = "netlify/functions"
-  command = "node build-topup-countries.js"
+  command = "node build-topup-countries.js && node build-blog.js"
 
 [functions]
   node_bundler = "esbuild"
@@ -9,6 +9,11 @@
 # Corre cada 5 minutos. Ver netlify/functions/retry-pending-esims.js
 [functions."retry-pending-esims"]
   schedule = "*/5 * * * *"
+
+# Republica el blog cuando Soro tiene artículos nuevos (revisa cada hora y solo
+# dispara un build si hay cambios). Requiere BUILD_HOOK_URL. Ver blog-sync.js
+[functions."blog-sync"]
+  schedule = "0 * * * *"
 
 [build.environment]
   SECRETS_SCAN_OMIT_PATHS = "infinity-roam/zendit_tier2.json,infinity-roam/zendit_prices.json,infinity-roam/netlify/functions/offer_country.json,infinity-roam/netlify/functions/offer_region.json,zendit_tier2.json,zendit_prices.json,netlify/functions/offer_country.json,netlify/functions/offer_region.json"
@@ -61,6 +66,20 @@
 # arquitectura interna, nombres de variables de entorno y la existencia
 # de admin-ir.html) — se removió del deploy, y esta regla evita que
 # vuelva a pasar sin que nadie se dé cuenta.
+# Blog: URLs antiguas del widget de Soro (/blog.html?post=slug) -> URL propia con 301
+[[redirects]]
+  from = "/blog.html"
+  query = { post = ":post" }
+  to = "/blog/:post/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog.html"
+  to = "/blog/"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/*.md"
   to = "/"
