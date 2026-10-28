@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QWNLSCXJ9P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QWNLSCXJ9P');
+  </script>
+  <script src="/utm.js"></script>
+  <title>Checkout — Infinity Roam</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Infinity Roam" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
+  <style>
+    :root{--ir-navy:#16223F;--ir-navy2:#223257;--ir-blue:#2864E6;--ir-cyan:#2864E6;}
+    body{background:var(--ir-navy)!important;color:#fff!important;}
+    /* NAV igual al home */
+    .nav, .nav.scrolled {
+      background: rgba(10,10,10,0.92) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    }
+    .nav .logo-text { color: #2864E6 !important; font-weight: 700 !important; }
+    .nav .logo-text strong { color: #C8C8C8 !important; font-weight: 400 !important; }
+    .nav .nav-links a { color: #B0B0B0 !important; }
+    .nav .lang-toggle { background: rgba(255,255,255,0.1) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.15) !important; }
+    .nav .nav-hamburger span { background: #fff !important; }
+    /* Checkout layout */
+    .checkout-section{background:var(--ir-navy)!important;}
+    .checkout-summary h2,.checkout-form-wrap h2{color:#fff!important;}
+    .summary-card{background:rgba(255,255,255,0.05)!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:16px!important;color:#fff!important;}
+    .summary-card *{color:#fff!important;}
+    .summary-loading{color:#B0B0B0!important;}
+    .summary-original-price{color:#B0B0B0!important;text-decoration:line-through!important;}
+    .summary-discount-badge{background:rgba(40,100,230,0.2)!important;color:var(--ir-cyan)!important;border-radius:6px!important;padding:2px 8px!important;font-size:.75rem!important;font-weight:700!important;}
+    .summary-label{color:#B0B0B0!important;}
+    .summary-total{border-top:1px solid rgba(255,255,255,0.1)!important;}
+    .summary-note{background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.08)!important;border-radius:10px!important;color:#B0B0B0!important;}
+    .badge-item{color:#B0B0B0!important;}
+    .checkout-compat-link{display:block;margin-top:12px;font-size:0.8rem;color:#2864E6;text-decoration:none;border-bottom:1px solid rgba(40,100,230,0.3);padding-bottom:1px;width:fit-content;}
+    .checkout-compat-link:hover{color:#4A90E8;}
+    .refund-guarantee{display:flex;gap:10px;align-items:flex-start;background:rgba(40,100,230,0.08);border:1px solid rgba(40,100,230,0.2);border-radius:12px;padding:14px 16px;margin-top:14px;}
+    .refund-guarantee-icon{font-size:1.3rem;flex-shrink:0;line-height:1;}
+    .refund-guarantee-title{font-size:0.85rem;font-weight:700;color:#fff;margin-bottom:3px;}
+    .refund-guarantee-desc{font-size:0.76rem;color:#B0B0B0;line-height:1.5;}
+    /* Franja de confianza — logos de tarjetas junto al botón de PayPal */
+    .payment-trust-strip{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
+    .payment-trust-label{font-size:0.78rem;color:#B0B0B0;font-weight:500;}
+    .payment-card-icons{display:flex;align-items:center;gap:6px;}
+    .card-icon{width:38px;height:24px;border-radius:5px;box-shadow:0 0 0 1px rgba(255,255,255,0.08);}
+    /* Form */
+    .checkout-form{background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:16px!important;}
+    label{color:#B0B0B0!important;font-size:.75rem!important;font-weight:600!important;text-transform:uppercase!important;letter-spacing:.08em!important;}
+    input[type="email"],input[type="text"]{background:rgba(255,255,255,0.07)!important;border:1.5px solid rgba(255,255,255,0.15)!important;border-radius:10px!important;color:#fff!important;font-family:'Outfit',sans-serif!important;}
+    input[type="email"]:focus,input[type="text"]:focus{border-color:rgba(40,100,230,0.5)!important;outline:none!important;}
+    input::placeholder{color:rgba(255,255,255,0.35)!important;}
+    small{color:#B0B0B0!important;}
+    /* Coupon */
+    .coupon-section label{color:#B0B0B0!important;}
+    .coupon-toggle{background:none;border:none;padding:0;font-size:0.82rem;color:#2864E6;cursor:pointer;text-decoration:none;border-bottom:1px solid rgba(40,100,230,0.35);font-family:'Outfit',sans-serif;}
+    .coupon-toggle:hover{color:#4A90E8;}
+    .coupon-input{background:rgba(255,255,255,0.07)!important;border:1.5px solid rgba(255,255,255,0.15)!important;border-radius:10px!important;color:#fff!important;font-family:'Outfit',sans-serif!important;}
+    .coupon-btn{background:var(--ir-blue)!important;color:#ffffff!important;border:none!important;border-radius:10px!important;font-weight:700!important;}
+    .coupon-btn:hover{background:#4A90E8!important;}
+    .coupon-btn:disabled{opacity:.5!important;}
+    .coupon-success{color:#34d399!important;font-size:.88rem!important;}
+    .coupon-error{color:#f87171!important;font-size:.88rem!important;}
+    /* Divider */
+    .divider-text{color:#B0B0B0!important;}
+    .divider-text::before,.divider-text::after{border-color:rgba(255,255,255,0.1)!important;}
+    /* Processing */
+    .processing-state p{color:#B0B0B0!important;}
+  </style>
+  <script>
+    // Carga el SDK de PayPal dinámicamente desde config en runtime
+    (async function() {
+      try {
+        const r = await fetch("/.netlify/functions/get-config");
+        const js = await r.text();
+        eval(js);
+        const clientId = window.IR_RUNTIME_CONFIG?.PAYPAL_CLIENT_ID || "";
+        if (clientId) {
+          const s = document.createElement("script");
+          s.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
+          s.id = "paypal-sdk";
+          document.head.appendChild(s);
+        }
+      } catch(e) { console.error("[PayPal] Error cargando SDK:", e); }
+    })();
+  </script>
+</head>
+<body class="checkout-page">
+
+  <nav class="nav ir-dark-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo ir-logo"></a>
+      <div class="nav-links">
+        <button id="lang-toggle" class="lang-toggle">EN</button>
+      </div>
+      <div class="nav-right-mobile">
+        <button id="lang-toggle-mobile" class="lang-toggle">EN</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="checkout-section">
+    <div class="container">
+      <div class="checkout-layout">
+        <div class="checkout-summary">
+          <h2 data-i18n="checkout_summary_title">Resumen del pedido</h2>
+          <div class="summary-card" id="summary-card">
+            <div class="summary-loading">Cargando plan...</div>
+          </div>
+          <div class="security-badges">
+            <div class="badge-item" data-i18n="checkout_badge_1">🔒 Pago 100% seguro</div>
+            <div class="badge-item" data-i18n="checkout_badge_2">⚡ Entrega inmediata</div>
+            <div class="badge-item" data-i18n="checkout_badge_3">📧 QR por email</div>
+          </div>
+          <div class="refund-guarantee">
+            <span class="refund-guarantee-icon">🛡️</span>
+            <div>
+              <p class="refund-guarantee-title" data-i18n="checkout_guarantee_title">Garantía de reembolso</p>
+              <p class="refund-guarantee-desc" data-i18n="checkout_guarantee_desc">Si tu eSIM no logra activarse por un problema técnico nuestro, o tu dispositivo resulta incompatible y no llegaste a usarla, te devolvemos el 100%. Escríbenos por WhatsApp dentro de las 48h siguientes a tu compra.</p>
+            </div>
+          </div>
+          <a href="compatibility.html" class="checkout-compat-link" data-i18n="checkout_compat_link">📱 ¿Tu teléfono es compatible con eSIM? Verifícalo →</a>
+        </div>
+        <div class="checkout-form-wrap">
+          <h2 data-i18n="checkout_form_title">Datos de entrega</h2>
+          <div class="checkout-form">
+            <div class="form-group">
+              <label data-i18n="checkout_email_label">Correo electrónico <span class="required">*</span></label>
+              <input type="email" id="customer-email" data-i18n-placeholder="checkout_email_placeholder" placeholder="tu@email.com" required data-clarity-mask="true" />
+              <small data-i18n="checkout_email_hint">Aquí recibirás tu código QR de activación</small>
+            </div>
+            <div class="form-group">
+              <label data-i18n="checkout_name_label">Nombre (opcional)</label>
+              <input type="text" id="customer-name" data-i18n-placeholder="checkout_name_placeholder" placeholder="Tu nombre" data-clarity-mask="true" />
+            </div>
+            <div class="coupon-section">
+                <label data-i18n="checkout_coupon_label" style="display:block;font-size:0.82rem;color:#B0B0B0;margin-bottom:8px;">Código promocional (opcional)</label>
+                <div class="coupon-row" id="coupon-row">
+                  <input type="text" class="coupon-input" id="coupon-input" placeholder="Ingresa tu código" maxlength="20" />
+                  <button class="coupon-btn" id="apply-coupon-btn" onclick="applyCoupon()">Aplicar</button>
+                </div>
+                <div class="coupon-success" id="coupon-success"></div>
+                <div class="coupon-error" id="coupon-error"></div>
+              </div>
+            <div class="divider-text">
+              <span data-i18n="checkout_payment_divider">Método de pago</span>
+            </div>
+            <div id="paypal-button-container"></div>
+            <div class="payment-trust-strip">
+              <span class="payment-trust-label" data-i18n="checkout_cards_accepted">Aceptamos</span>
+              <span class="payment-card-icons">
+                <svg class="card-icon" viewBox="0 0 48 30" aria-label="Visa"><rect width="48" height="30" rx="5" fill="#1A1F71"/><text x="24" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-style="italic" font-weight="700" fill="#ffffff">VISA</text></svg>
+                <svg class="card-icon" viewBox="0 0 48 30" aria-label="Mastercard"><rect width="48" height="30" rx="5" fill="#16223f"/><circle cx="20" cy="15" r="8.5" fill="#EB001B"/><circle cx="28" cy="15" r="8.5" fill="#F79E1B" fill-opacity="0.9"/></svg>
+                <svg class="card-icon" viewBox="0 0 48 30" aria-label="American Express"><rect width="48" height="30" rx="5" fill="#006FCF"/><text x="24" y="19" text-anchor="middle" font-family="Arial, sans-serif" font-size="9.5" font-weight="700" fill="#ffffff">AMEX</text></svg>
+              </span>
+            </div>
+            <div id="checkout-error" class="checkout-error" style="display:none"></div>
+            <div id="checkout-processing" class="processing-state" style="display:none">
+              <div class="spinner"></div>
+              <p data-i18n="checkout_processing">Procesando tu pedido...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="zendit.js"></script>
+  <script src="checkout.js"></script>
+  <script>
+    // El toggle de idioma ya está manejado globalmente por i18n.js.
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+    }
+  </script>
+  <script src="logo.js"></script>
+  <script src="whatsapp.js"></script>
+  <script src="recover-qr.js"></script>
+</body>
+</html>

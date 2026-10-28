@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Test Email — Infinity Roam</title>
+<style>
+  body{font-family:Arial,sans-serif;background:#16223F;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}
+  .box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:32px;width:90%;max-width:480px;}
+  h2{margin:0 0 20px;color:#2864E6;}
+  label{display:block;font-size:.78rem;color:#B0B0B0;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  input,select{width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:.95rem;margin-bottom:16px;box-sizing:border-box;}
+  button{width:100%;padding:13px;background:#2864E6;color:#ffffff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;}
+  button:hover{background:#4A90E8;}
+  #result{margin-top:16px;padding:12px;border-radius:8px;font-size:.88rem;display:none;}
+  .ok{background:rgba(52,211,153,0.15);border:1px solid #34d399;color:#34d399;}
+  .err{background:rgba(248,113,113,0.15);border:1px solid #f87171;color:#f87171;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>🧪 Test Email</h2>
+  <label>Email destino</label>
+  <input type="email" id="to_email" value="sales@infinity-roam.com"/>
+  <label>Tipo de prueba</label>
+  <select id="tipo" onchange="toggleQtyField()">
+    <option value="china">eSIM China (con aviso firewall)</option>
+    <option value="normal">eSIM normal (España, 1 unidad)</option>
+    <option value="multi">Múltiples eSIMs (mismo destino)</option>
+  </select>
+  <div id="qty-field" style="display:none">
+    <label>Cantidad de eSIMs a simular (2-5)</label>
+    <input type="number" id="qty" value="3" min="2" max="5" />
+  </div>
+  <button onclick="sendTest()">Enviar email de prueba</button>
+  <div id="result"></div>
+</div>
+<script>
+function toggleQtyField() {
+  document.getElementById('qty-field').style.display =
+    document.getElementById('tipo').value === 'multi' ? 'block' : 'none';
+}
+async function sendTest() {
+  var btn = document.querySelector('button');
+  var res = document.getElementById('result');
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+  res.style.display = 'none';
+
+  var tipo = document.getElementById('tipo').value;
+  var email = document.getElementById('to_email').value;
+
+  var payload;
+  if (tipo === 'multi') {
+    var qty = Math.min(5, Math.max(2, parseInt(document.getElementById('qty').value, 10) || 3));
+    var blocks = '';
+    for (var i = 1; i <= qty; i++) {
+      // QR de prueba generado con un servicio público — NO es una eSIM real,
+      // solo sirve para ver cómo se ve el bloque visualmente en el correo.
+      var fakeQrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TEST-UNIT-' + i;
+      blocks +=
+        '<table style="background:#f5f5f7;border-radius:12px;padding:20px;margin:0 0 16px;width:100%;" cellspacing="0" cellpadding="0">' +
+        '<tr><td style="text-align:center;">' +
+        '<p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 12px;">eSIM ' + i + ' de ' + qty + '</p>' +
+        '<img src="' + fakeQrUrl + '" alt="QR Code" width="180" height="180" style="display:block;border-radius:12px;margin:0 auto 10px;" />' +
+        '<p style="font-size:12px;color:#888;margin:0 0 2px;">Código de activación</p>' +
+        '<p style="font-size:13px;font-weight:bold;color:#000;word-break:break-all;font-family:monospace;margin:0;">LPA:1$test.smdp.example.com$TEST-CODE-' + i + '</p>' +
+        '</td></tr></table>';
+    }
+    payload = {
+      to_email: email,
+      to_name: 'Test Cliente Multi',
+      subject: 'PRUEBA: Tus ' + qty + ' eSIMs están listas! - Infinity Roam',
+      order_id: 'TEST-MULTI-001',
+      plan_name: 'España 5GB / 15 días',
+      plan_price: '9.99 USD',
+      quantity: qty,
+      total_price: (9.99 * qty).toFixed(2) + ' USD',
+      transaction_id: 'TEST-MULTI-001',
+      recovery_url: 'https://infinity-roam.com/my-esim.html?id=TEST-MULTI-001',
+      qr_image: '',
+      activation_code: 'LPA:1$test.smdp.example.com$TEST-CODE-1', // respaldo: unidad 1 (compatibilidad si la plantilla aún no tiene qr_codes_block)
+      smdp_address: 'test.smdp.example.com',
+      qr_codes_block: blocks,
+      china_notice: ''
+    };
+  } else {
+    payload = tipo === 'china' ? {
+    to_email: email,
+    to_name: 'Test Cliente China',
+    subject: 'Tu eSIM para China esta lista! Instalala ANTES de llegar - Infinity Roam',
+    order_id: 'TEST-CN-001',
+    plan_name: 'China 30GB / 30 dias',
+    plan_price: '20.46 USD',
+    transaction_id: 'TEST-CN-001',
+    recovery_url: 'https://infinity-roam.com/my-esim.html?id=TEST-CN-001',
+    qr_image: '',
+    activation_code: 'LPA:1$test.smdp.example.com$TEST-ACTIVATION-CODE',
+    smdp_address: 'test.smdp.example.com',
+    china_notice: '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:16px;margin:0 0 20px;font-size:14px;color:#856404;">IMPORTANTE: Instala y activa tu eSIM ANTES de llegar a China. Una vez dentro del pais no podras descargar la app ni acceder al QR por internet. Tu eSIM te dara acceso a WhatsApp, Google, Instagram y YouTube sin restricciones gracias al enrutamiento internacional.</div>'
+  } : {
+    to_email: email,
+    to_name: 'Test Cliente',
+    subject: 'Tu eSIM esta lista! - Infinity Roam',
+    order_id: 'TEST-ES-001',
+    plan_name: 'Espana 2GB / 15 dias',
+    plan_price: '3.19 USD',
+    transaction_id: 'TEST-ES-001',
+    recovery_url: 'https://infinity-roam.com/my-esim.html?id=TEST-ES-001',
+    activation_code: 'LPA:1$test.smdp.example.com$TEST-ACTIVATION-CODE',
+    smdp_address: 'test.smdp.example.com',
+    qr_image: '',
+    china_notice: ''
+  };
+  }
+
+  try {
+    var r = await fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    var data = await r.json();
+    res.style.display = 'block';
+    if (data.ok) {
+      res.className = 'ok';
+      res.textContent = 'Email enviado correctamente. Revisa tu bandeja de entrada.';
+    } else {
+      res.className = 'err';
+      res.textContent = 'Error: ' + (data.error || JSON.stringify(data));
+    }
+  } catch(e) {
+    res.style.display = 'block';
+    res.className = 'err';
+    res.textContent = 'Error de conexion: ' + e.message;
+  }
+
+  btn.textContent = 'Enviar email de prueba';
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>

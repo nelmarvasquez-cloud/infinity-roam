@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QWNLSCXJ9P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QWNLSCXJ9P');
+  </script>
+  <script src="/utm.js"></script>
+  <title>¿Tu teléfono es compatible con eSIM? — Infinity Roam</title>
+  <meta name="description" content="Verifica si tu iPhone o Android soporta eSIM. Lista de modelos compatibles y cómo confirmarlo en los ajustes de tu teléfono antes de comprar." />
+  <link rel="canonical" href="https://infinity-roam.com/compatibility.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="¿Tu teléfono es compatible con eSIM? — Infinity Roam" />
+  <meta property="og:description" content="Verifica si tu iPhone o Android soporta eSIM antes de comprar tu plan." />
+  <meta property="og:url" content="https://infinity-roam.com/compatibility.html" />
+  <meta property="og:image" content="https://infinity-roam.com/icons/icon-512.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="¿Tu teléfono es compatible con eSIM? — Infinity Roam" />
+  <meta name="twitter:description" content="Verifica si tu iPhone o Android soporta eSIM antes de comprar." />
+  <meta name="twitter:image" content="https://infinity-roam.com/icons/icon-512.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Infinity Roam" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
+  <style>
+    .compat-hero {
+      padding: 120px 0 60px;
+      text-align: center;
+      background: linear-gradient(135deg, #16223F 0%, #223257 60%, #16223F 100%);
+    }
+    .compat-search-wrap {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .compat-search-box {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+    }
+    .compat-input {
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      padding: 16px 24px;
+      font-family: var(--font);
+      font-size: 1rem;
+      color: white;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .compat-input::placeholder { color: rgba(255,255,255,0.3); }
+    .compat-input:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); }
+    .compat-btn {
+      background: white;
+      color: black;
+      border: none;
+      border-radius: 50px;
+      padding: 16px 28px;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .compat-btn:hover { background: rgba(255,255,255,0.88); }
+
+    .compat-result {
+      max-width: 600px;
+      margin: 32px auto 0;
+      padding: 0 24px;
+      display: none;
+    }
+    .result-card {
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      animation: fadeUp 0.4s ease both;
+    }
+    .result-card.compatible { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); }
+    .result-card.incompatible { background: rgba(255,80,80,0.08); border: 1px solid rgba(255,80,80,0.2); }
+    .result-card.unknown { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+
+    .result-icon { font-size: 3rem; margin-bottom: 16px; }
+    .result-title { font-family: var(--font); font-size: 1.4rem; font-weight: 600; color: white; margin-bottom: 8px; }
+    .result-sub { font-size: 0.9rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 24px; }
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.6);
+      margin: 4px;
+    }
+
+    .devices-section {
+      padding: 80px 0;
+      background: #fff;
+    }
+    .devices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .brand-card {
+      background: var(--gray-100);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: var(--transition);
+    }
+    .brand-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .brand-emoji { font-size: 1.8rem; }
+    .brand-name { font-family: var(--font); font-weight: 600; font-size: 1rem; }
+    .brand-models {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .model-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    .model-row:last-child { border-bottom: none; }
+    .model-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 50px;
+      font-weight: 500;
+    }
+    .badge-yes { background: #e8f5e9; color: #2e7d32; }
+    .badge-no { background: #fce4ec; color: #c62828; }
+    .badge-partial { background: #fff3e0; color: #e65100; }
+
+    .verify-section {
+      padding: 80px 0;
+      background: var(--gray-100);
+      text-align: center;
+    }
+    .verify-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 700px;
+      margin: 40px auto 0;
+      text-align: left;
+    }
+    .verify-step {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .verify-step-os {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray-400);
+      margin-bottom: 12px;
+    }
+    .verify-step ol {
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .verify-step li { font-size: 0.85rem; color: var(--text-2); line-height: 1.5; }
+
+    @media (max-width: 600px) {
+      .compat-search-box { flex-direction: column; }
+      .verify-steps { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo ir-logo"></a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav_home">Inicio</a>
+        <a href="catalog.html" data-i18n="nav_plans">Planes</a>
+        <a href="recharge.html" data-i18n="nav_topup">Recargas</a>
+        <button id="lang-toggle" class="lang-toggle">EN</button>
+      </div>
+      <div class="nav-right-mobile">
+        <button id="lang-toggle-mobile" class="lang-toggle">EN</button>
+        <button class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="compat-hero">
+    <div class="compat-search-wrap">
+      <p class="apple-eyebrow" style="color:rgba(255,255,255,0.4);" id="compat-tag">Compatibilidad</p>
+      <h1 class="apple-headline" style="font-size: clamp(2rem,5vw,3.5rem);">
+        <span id="compat-title">¿Tu teléfono</span><br/>
+        <em id="compat-title2">soporta eSIM?</em>
+      </h1>
+      <p class="apple-subhead" style="font-size:0.95rem;" id="compat-sub">
+        Escribe el modelo de tu teléfono para verificar al instante
+      </p>
+      <div class="compat-search-box">
+        <input
+          type="text"
+          class="compat-input"
+          id="device-input"
+          placeholder="Ej: iPhone 13, Samsung S22, Pixel 7..."
+        />
+        <button class="compat-btn" id="check-btn" onclick="checkDevice()">
+          <span id="check-btn-text">Verificar</span>
+        </button>
+      </div>
+      <div class="compat-result" id="compat-result"></div>
+    </div>
+  </section>
+
+  <!-- DISPOSITIVOS COMPATIBLES -->
+  <section class="devices-section">
+    <div class="container">
+      <p class="apple-section-eyebrow" id="devices-tag">Dispositivos</p>
+      <h2 class="apple-section-title" id="devices-title">
+        <span>Modelos</span> <strong>compatibles</strong>
+      </h2>
+      <p class="apple-section-sub" id="devices-sub">Lista completa de teléfonos que soportan eSIM</p>
+
+      <div class="devices-grid">
+
+        <!-- APPLE -->
+        <div class="brand-card">
+          <div class="brand-header">
+            <span class="brand-emoji">🍎</span>
+            <span class="brand-name">Apple iPhone</span>
+          </div>
+          <div class="brand-models">
+            <div class="model-row"><span>iPhone XS / XS Max / XR</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>iPhone 11 / Pro / Max</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>iPhone 12 / Pro / Max / Mini</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>iPhone 13 / Pro / Max / Mini</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>iPhone 14 / Pro / Max / Plus</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>iPhone 15 / Pro / Max / Plus</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>iPhone 16 / Pro / Max / Plus</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>iPhone X o anterior</span><span class="model-badge badge-no">✗ No compatible</span></div>
+          </div>
+        </div>
+
+        <!-- SAMSUNG -->
+        <div class="brand-card">
+          <div class="brand-header">
+            <span class="brand-emoji">📱</span>
+            <span class="brand-name">Samsung Galaxy</span>
+          </div>
+          <div class="brand-models">
+            <div class="model-row"><span>S20 / S20+ / S20 Ultra</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>S21 / S21+ / S21 Ultra</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>S22 / S22+ / S22 Ultra</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>S23 / S23+ / S23 Ultra</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>S24 / S24+ / S24 Ultra</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Z Fold 2/3/4/5/6</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Z Flip 3/4/5/6</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Note 20 / Note 20 Ultra</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+          </div>
+        </div>
+
+        <!-- GOOGLE PIXEL -->
+        <div class="brand-card">
+          <div class="brand-header">
+            <span class="brand-emoji">🔵</span>
+            <span class="brand-name">Google Pixel</span>
+          </div>
+          <div class="brand-models">
+            <div class="model-row"><span>Pixel 3 / 3 XL</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Pixel 4 / 4 XL / 4a 5G</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Pixel 5 / 5a</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Pixel 6 / 6 Pro / 6a</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Pixel 7 / 7 Pro / 7a</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Pixel 8 / 8 Pro / 8a</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Pixel 9 / 9 Pro / 9 XL</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Pixel 3a / 4a (4G)</span><span class="model-badge badge-no">✗ No compatible</span></div>
+          </div>
+        </div>
+
+        <!-- OTROS -->
+        <div class="brand-card">
+          <div class="brand-header">
+            <span class="brand-emoji">📲</span>
+            <span class="brand-name">Otros fabricantes</span>
+          </div>
+          <div class="brand-models">
+            <div class="model-row"><span>Motorola Razr 2019+</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Huawei P40 / Mate 40</span><span class="model-badge badge-partial">⚠ Limitado</span></div>
+            <div class="model-row"><span>OnePlus 11 / 12</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Oppo Find X3 / X5</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Sony Xperia 10 IV+</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>Xiaomi 13 / 14</span><span class="model-badge badge-partial">⚠ Según región</span></div>
+            <div class="model-row"><span>Surface Duo 2</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+            <div class="model-row"><span>iPad Pro / Air / Mini 5+</span><span class="model-badge badge-yes">✓ Compatible</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- VERIFICAR MANUALMENTE -->
+  <section class="verify-section">
+    <div class="container">
+      <p class="apple-section-eyebrow" id="verify-tag">Manual</p>
+      <h2 class="apple-section-title" id="verify-title">
+        <span>Verifica tú mismo</span> <strong>en segundos</strong>
+      </h2>
+      <div class="verify-steps">
+        <div class="verify-step">
+          <div class="verify-step-os">🍎 iPhone (iOS)</div>
+          <ol>
+            <li>Ve a <strong>Ajustes</strong></li>
+            <li>Toca <strong>General</strong></li>
+            <li>Toca <strong>Información</strong></li>
+            <li>Busca <strong>"Número de EID"</strong></li>
+            <li>Si aparece ✅ tu iPhone soporta eSIM</li>
+          </ol>
+        </div>
+        <div class="verify-step">
+          <div class="verify-step-os">🤖 Android</div>
+          <ol>
+            <li>Ve a <strong>Ajustes</strong></li>
+            <li>Toca <strong>Acerca del teléfono</strong></li>
+            <li>Busca <strong>"Estado del SIM"</strong></li>
+            <li>Busca <strong>"EID"</strong></li>
+            <li>Si aparece ✅ tu Android soporta eSIM</li>
+          </ol>
+        </div>
+      </div>
+      <div style="margin-top:40px;">
+        <a href="catalog.html" class="btn-primary" id="compat-cta">Ver planes disponibles →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="apple-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2025 Infinity Roam. Todos los derechos reservados.</p>
+        <p data-i18n="footer_powered">Conexión eSIM segura · Pagos seguros por PayPal</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="logo.js"></script>
+  <script src="whatsapp.js"></script>
+  <script src="recover-qr.js"></script>
+
+  <script>
+  // Base de datos de dispositivos
+  const DEVICES = {
+    // iPhone compatibles
+    "iphone xs": true, "iphone xr": true, "iphone 11": true,
+    "iphone 12": true, "iphone 13": true, "iphone 14": true,
+    "iphone 15": true, "iphone 16": true, "iphone se 2": true,
+    "iphone se 3": true, "iphone se2": true, "iphone se3": true,
+    // iPhone no compatibles
+    "iphone x": false, "iphone 8": false, "iphone 7": false,
+    "iphone 6": false, "iphone 5": false,
+    // Samsung
+    "galaxy s20": true, "galaxy s21": true, "galaxy s22": true,
+    "galaxy s23": true, "galaxy s24": true, "galaxy z fold": true,
+    "galaxy z flip": true, "galaxy note 20": true, "samsung s20": true,
+    "samsung s21": true, "samsung s22": true, "samsung s23": true,
+    "samsung s24": true,
+    // Google Pixel
+    "pixel 3": true, "pixel 4": true, "pixel 5": true,
+    "pixel 6": true, "pixel 7": true, "pixel 8": true, "pixel 9": true,
+    "pixel 3a": false, "pixel 4a": false,
+    // Otros
+    "motorola razr": true, "oneplus 11": true, "oneplus 12": true,
+    "oppo find x3": true, "oppo find x5": true,
+  };
+
+  function checkDevice() {
+    const input = document.getElementById("device-input").value.trim().toLowerCase();
+    const result = document.getElementById("compat-result");
+
+    if (!input) return;
+
+    let compatible = null;
+    for (const [key, value] of Object.entries(DEVICES)) {
+      if (input.includes(key) || key.includes(input)) {
+        compatible = value;
+        break;
+      }
+    }
+
+    result.style.display = "block";
+
+    const lang = localStorage.getItem("ir_lang") || "es";
+
+    if (compatible === true) {
+      result.innerHTML = `
+        <div class="result-card compatible">
+          <div class="result-icon">✅</div>
+          <div class="result-title">${lang === "es" ? "¡Compatible con eSIM!" : "eSIM Compatible!"}</div>
+          <div class="result-sub">${lang === "es" ? "Tu dispositivo soporta eSIM. Puedes comprar un plan y activarlo en minutos." : "Your device supports eSIM. You can buy a plan and activate it in minutes."}</div>
+          <a href="catalog.html" style="display:inline-flex;align-items:center;gap:8px;background:white;color:black;padding:12px 24px;border-radius:50px;font-family:var(--font);font-weight:600;font-size:0.88rem;text-decoration:none;">
+            ${lang === "es" ? "Ver planes →" : "See plans →"}
+          </a>
+        </div>`;
+    } else if (compatible === false) {
+      result.innerHTML = `
+        <div class="result-card incompatible">
+          <div class="result-icon">❌</div>
+          <div class="result-title">${lang === "es" ? "No compatible" : "Not Compatible"}</div>
+          <div class="result-sub">${lang === "es" ? "Lo sentimos, este dispositivo no soporta eSIM. Considera actualizarlo para usar nuestra conectividad global." : "Sorry, this device does not support eSIM. Consider upgrading to use our global connectivity."}</div>
+        </div>`;
+    } else {
+      result.innerHTML = `
+        <div class="result-card unknown">
+          <div class="result-icon">🔍</div>
+          <div class="result-title">${lang === "es" ? "No encontrado" : "Not Found"}</div>
+          <div class="result-sub">${lang === "es" ? "No tenemos información de este modelo. Verifica manualmente buscando el 'EID' en la configuración de tu teléfono, o contáctanos por WhatsApp." : "We don't have info on this model. Check manually by looking for 'EID' in your phone settings, or contact us on WhatsApp."}</div>
+          <span class="result-badge">📱 ${lang === "es" ? "Ajustes → General → Info → EID" : "Settings → General → About → EID"}</span>
+        </div>`;
+    }
+  }
+
+  document.getElementById("device-input").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") checkDevice();
+  });
+
+  // El toggle de idioma ya está manejado globalmente por i18n.js.
+
+  // Menú hamburguesa (móvil)
+  const hamburger = document.getElementById("hamburger");
+  const navLinksEl = document.querySelector(".nav-links");
+  if (hamburger && navLinksEl) {
+    hamburger.addEventListener("click", () => navLinksEl.classList.toggle("open"));
+    navLinksEl.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => navLinksEl.classList.remove("open"));
+    });
+  }
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+  }
+  </script>
+</body>
+</html>

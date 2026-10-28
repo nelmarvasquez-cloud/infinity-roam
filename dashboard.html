@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Dashboard de Analytics — Infinity Roam</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#16223F;--card:#12151c;--card2:#1a1f2b;--blue:#2864E6;--blue2:#4A90E8;--green:#34d399;--red:#f87171;--amber:#fbbf24;--gray:#9ca3af;--border:#242a36;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Outfit",sans-serif;background:var(--navy);color:#fff;min-height:100vh;}
+    a{color:inherit;}
+
+    /* LOGIN */
+    .login-wrap{max-width:380px;margin:100px auto;padding:0 20px;text-align:center;}
+    .login-wrap h1{font-size:1.4rem;font-weight:800;margin-bottom:6px;}
+    .login-wrap p{color:var(--gray);font-size:.85rem;margin-bottom:24px;}
+    .pw-input{width:100%;padding:13px 14px;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;color:#fff;font-size:1rem;outline:none;margin-bottom:12px;font-family:inherit;}
+    .btn{padding:12px 20px;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;border:none;font-family:inherit;}
+    .btn-primary{background:var(--blue);color:#fff;width:100%;}
+    .btn-primary:hover{background:var(--blue2);}
+    #login-err{color:var(--red);font-size:.82rem;margin-top:8px;min-height:18px;}
+
+    /* LAYOUT */
+    .topbar{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    .topbar h1{font-size:1.1rem;font-weight:800;}
+    .topbar h1 span{color:var(--blue2);}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .filters select,.filters input{background:var(--card2);border:1px solid var(--border);color:#fff;padding:8px 10px;border-radius:8px;font-size:.8rem;font-family:inherit;}
+    .container{max-width:1280px;margin:0 auto;padding:24px;}
+
+    /* KPI CARDS */
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px;}
+    .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+    .kpi-card .kpi-label{font-size:.72rem;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+    .kpi-card .kpi-value{font-size:1.7rem;font-weight:800;}
+    .kpi-card .kpi-var{font-size:.78rem;font-weight:700;margin-top:4px;}
+    .kpi-var.up{color:var(--green);} .kpi-var.down{color:var(--red);} .kpi-var.flat{color:var(--gray);}
+
+    /* SECTIONS */
+    .section{margin-bottom:32px;}
+    .section-title{font-size:1.05rem;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+    .section-sub{font-size:.8rem;color:var(--gray);margin-bottom:16px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;}
+
+    /* FUNNEL */
+    .funnel-step{margin-bottom:16px;}
+    .funnel-row{display:flex;justify-content:space-between;align-items:baseline;font-size:.88rem;margin-bottom:6px;}
+    .funnel-row .fs-label{font-weight:700;}
+    .funnel-row .fs-value{color:var(--gray);}
+    .funnel-row .fs-conv{color:var(--green);font-weight:700;margin-left:8px;}
+    .funnel-bar-bg{background:var(--card2);border-radius:8px;height:26px;overflow:hidden;position:relative;}
+    .funnel-bar-fill{background:linear-gradient(90deg,var(--blue),var(--blue2));height:100%;border-radius:8px;transition:width .4s;}
+    .funnel-arrow{text-align:center;color:var(--gray);font-size:.75rem;margin:4px 0;}
+    .funnel-dropoff-tag{font-size:.72rem;color:var(--red);margin-top:2px;}
+
+    /* TABLE */
+    table{width:100%;border-collapse:collapse;font-size:.84rem;}
+    th{text-align:left;padding:10px 12px;color:var(--gray);font-weight:600;text-transform:uppercase;font-size:.7rem;letter-spacing:.04em;border-bottom:1px solid var(--border);}
+    td{padding:10px 12px;border-bottom:1px solid var(--border);}
+    tr:last-child td{border-bottom:none;}
+    .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.7rem;font-weight:700;}
+    .badge-warn{background:rgba(251,191,36,.15);color:var(--amber);}
+    .badge-danger{background:rgba(248,113,113,.15);color:var(--red);}
+
+    /* INSIGHTS */
+    .insight{display:flex;gap:10px;padding:12px 14px;border-radius:10px;margin-bottom:10px;font-size:.86rem;line-height:1.5;}
+    .insight.critical{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);}
+    .insight.warning{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);}
+    .insight.info{background:rgba(40,100,230,.08);border:1px solid rgba(40,100,230,.25);}
+
+    /* DROPOFF */
+    .dropoff-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+    .dropoff-row:last-child{border-bottom:none;}
+    .dropoff-row .do-path{font-size:.85rem;}
+    .dropoff-row .do-pct{font-weight:800;font-size:1.1rem;}
+    .biggest-dropoff{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:12px;padding:14px 18px;margin-bottom:16px;}
+
+    /* GRID 2COL */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
+
+    .empty-state{text-align:center;padding:40px 20px;color:var(--gray);}
+    .not-connected{background:var(--card2);border:1px dashed var(--border);border-radius:10px;padding:16px;text-align:center;color:var(--gray);font-size:.85rem;}
+    .highlight-row{background:rgba(251,191,36,.06);}
+    #app{display:none;}
+  </style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-wrap">
+    <h1>📈 Dashboard de Analytics</h1>
+    <p>Infinity Roam — acceso restringido</p>
+    <input type="password" class="pw-input" id="pw-input" placeholder="Contraseña de acceso" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="btn btn-primary" onclick="doLogin()">Entrar</button>
+    <div id="login-err"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <h1>📈 Analytics <span>Infinity Roam</span></h1>
+    <div class="filters">
+      <select id="f-range" onchange="onFilterChange()">
+        <option value="today">Hoy</option>
+        <option value="yesterday">Ayer</option>
+        <option value="7d" selected>Últimos 7 días</option>
+        <option value="30d">Últimos 30 días</option>
+        <option value="90d">Últimos 90 días</option>
+      </select>
+      <input type="text" id="f-source" placeholder="Fuente (ej: instagram)" onchange="onFilterChange()" style="width:140px"/>
+      <input type="text" id="f-campaign" placeholder="Campaña" onchange="onFilterChange()" style="width:120px"/>
+      <input type="text" id="f-country" placeholder="País" onchange="onFilterChange()" style="width:100px"/>
+      <select id="f-device" onchange="onFilterChange()">
+        <option value="">Todos los dispositivos</option>
+        <option value="mobile">Mobile</option>
+        <option value="desktop">Desktop</option>
+        <option value="tablet">Tablet</option>
+      </select>
+      <button class="btn btn-primary" style="padding:8px 16px;font-size:.8rem" onclick="loadDashboard()">↻ Actualizar</button>
+    </div>
+  </div>
+
+  <div class="container" id="content">
+    <div class="empty-state">Cargando datos de Google Analytics...</div>
+  </div>
+</div>
+
+<script>
+let AUTH = "";
+let lastData = null;
+
+function doLogin() {
+  const pw = document.getElementById("pw-input").value;
+  if (!pw) return;
+  AUTH = pw;
+  fetch("/.netlify/functions/dashboard-api?range=7d", { headers: { Authorization: `Bearer ${AUTH}` } })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error === "No autorizado") {
+        document.getElementById("login-err").textContent = "Contraseña incorrecta";
+        return;
+      }
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      renderDashboard(data);
+    })
+    .catch(() => { document.getElementById("login-err").textContent = "Error de conexión"; });
+}
+
+function onFilterChange() { loadDashboard(); }
+
+async function loadDashboard() {
+  const content = document.getElementById("content");
+  content.innerHTML = `<div class="empty-state">Cargando...</div>`;
+
+  const range = document.getElementById("f-range").value;
+  const source = document.getElementById("f-source").value.trim();
+  const campaign = document.getElementById("f-campaign").value.trim();
+  const country = document.getElementById("f-country").value.trim();
+  const device = document.getElementById("f-device").value;
+
+  const qs = new URLSearchParams({ range });
+  if (source) qs.set("source", source);
+  if (campaign) qs.set("campaign", campaign);
+  if (country) qs.set("country", country);
+  if (device) qs.set("device", device);
+
+  try {
+    const r = await fetch(`/.netlify/functions/dashboard-api?${qs}`, { headers: { Authorization: `Bearer ${AUTH}` } });
+    const data = await r.json();
+    renderDashboard(data);
+  } catch (e) {
+    content.innerHTML = `<div class="empty-state">❌ Error de conexión: ${e.message}</div>`;
+  }
+}
+
+function fmtNum(n) { return (n || 0).toLocaleString("es"); }
+function fmtMoney(n) { return "$" + (n || 0).toFixed(2); }
+function varClass(v) { if (!v || v.pct == null) return "flat"; return v.pct >= 0 ? "up" : "down"; }
+function varArrow(v) { if (!v || v.pct == null) return ""; return v.pct >= 0 ? "▲" : "▼"; }
+
+function renderDashboard(data) {
+  lastData = data;
+  const content = document.getElementById("content");
+
+  if (!data.configured) {
+    content.innerHTML = `
+      <div class="card" style="text-align:center;padding:40px">
+        <h2 style="margin-bottom:12px">⚙️ GA4 Data API aún no está conectado</h2>
+        <p style="color:var(--gray);font-size:.9rem;line-height:1.7;max-width:560px;margin:0 auto">
+          Configura en Netlify las variables <code>GA4_PROPERTY_ID</code>, <code>GA4_SERVICE_ACCOUNT_EMAIL</code>
+          y <code>GA4_SERVICE_ACCOUNT_PRIVATE_KEY</code>. Revisa el archivo <code>ANALYTICS_README.md</code>
+          incluido en el proyecto para la guía completa paso a paso.
+        </p>
+      </div>`;
+    return;
+  }
+  if (!data.ok) {
+    content.innerHTML = `
+      <div class="card">
+        <p style="color:var(--red);font-weight:700;margin-bottom:10px">❌ Error consultando GA4</p>
+        <p style="color:var(--gray);font-size:.88rem;line-height:1.6">${data.error || "Error desconocido"}</p>
+        ${data.queryErrors ? `<pre style="background:var(--card2);padding:12px;border-radius:8px;font-size:.75rem;color:var(--amber);overflow-x:auto;margin-top:10px">${JSON.stringify(data.queryErrors, null, 2)}</pre>` : ""}
+      </div>`;
+    return;
+  }
+
+  const k = data.kpis;
+
+  // ── Aviso de fallos parciales (consultas no críticas que fallaron) ──
+  const queryErrorsHTML = !data.queryErrors ? "" : `
+    <div class="section">
+      <div style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:14px 18px;font-size:.82rem">
+        <strong style="color:var(--amber)">⚠ Algunas secciones no pudieron cargar datos:</strong>
+        <ul style="margin:8px 0 0 20px;color:var(--gray)">
+          ${Object.entries(data.queryErrors).map(([q, err]) => `<li><strong>${q}</strong>: ${err}</li>`).join("")}
+        </ul>
+      </div>
+    </div>`;
+
+  // ── 1. KPIs principales (Revenue, Purchases, Conversion Rate, Sessions primero) ──
+  const kpiHTML = `
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Ingresos</div><div class="kpi-value">${fmtMoney(k.revenue.value)}</div>
+        ${k.revenue.variation ? `<div class="kpi-var ${varClass(k.revenue.variation)}">${varArrow(k.revenue.variation)} ${k.revenue.variation.label}</div>` : ""}</div>
+      <div class="kpi-card"><div class="kpi-label">Compras</div><div class="kpi-value">${fmtNum(k.purchases.value)}</div>
+        ${k.purchases.variation ? `<div class="kpi-var ${varClass(k.purchases.variation)}">${varArrow(k.purchases.variation)} ${k.purchases.variation.label}</div>` : ""}</div>
+      <div class="kpi-card"><div class="kpi-label">Tasa de conversión</div><div class="kpi-value">${k.conversionRate.value}%</div>
+        <div class="kpi-var flat">Sesiones → Compra</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sesiones</div><div class="kpi-value">${fmtNum(k.sessions.value)}</div>
+        ${k.sessions.variation ? `<div class="kpi-var ${varClass(k.sessions.variation)}">${varArrow(k.sessions.variation)} ${k.sessions.variation.label}</div>` : ""}</div>
+      <div class="kpi-card"><div class="kpi-label">Usuarios</div><div class="kpi-value">${fmtNum(k.users.value)}</div>
+        ${k.users.variation ? `<div class="kpi-var ${varClass(k.users.variation)}">${varArrow(k.users.variation)} ${k.users.variation.label}</div>` : ""}</div>
+      <div class="kpi-card"><div class="kpi-label">AOV (ticket promedio)</div><div class="kpi-value">${fmtMoney(k.aov.value)}</div></div>
+    </div>`;
+
+  // ── 2. EMBUDO — protagonista visual ──
+  const maxVal = Math.max(...data.funnel.map(f => f.value), 1);
+  const funnelHTML = data.funnel.map((f, i) => `
+    <div class="funnel-step">
+      <div class="funnel-row">
+        <span class="fs-label">${f.label} <span style="font-size:.7rem;color:var(--gray);font-weight:400">(${f.metric_used})</span></span>
+        <span class="fs-value">${fmtNum(f.value)}
+          ${f.step_conversion_pct !== null ? `<span class="fs-conv">${f.step_conversion_pct}% del paso anterior</span>` : ""}
+        </span>
+      </div>
+      <div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:${Math.round((f.value/maxVal)*100)}%"></div></div>
+      ${f.drop_off_pct !== null ? `<div class="funnel-dropoff-tag">↓ ${f.drop_off_pct}% de abandono en este paso · ${f.cumulative_conversion_pct}% conversión acumulada desde Sesiones</div>` : ""}
+    </div>
+  `).join("");
+
+  // ── 3. Tráfico por canal ──
+  const trafficHTML = !data.traffic.length ? `<p class="empty-state">Sin datos de tráfico en este rango</p>` : `
+    <table><tr><th>Canal</th><th>Fuente / Medio</th><th>Campaña</th><th>Sesiones</th><th>Engagement</th><th>Ingresos</th></tr>
+    ${data.traffic.map(t => `
+      <tr>
+        <td><strong>${t.channel}</strong></td>
+        <td style="color:var(--gray)">${t.source} / ${t.medium}</td>
+        <td>${t.campaign === "(not set)" ? "—" : t.campaign}</td>
+        <td>${fmtNum(t.sessions)}</td>
+        <td>${t.engagementRate}%</td>
+        <td>${fmtMoney(t.revenue)}</td>
+      </tr>`).join("")}
+    </table>`;
+
+  // ── 4. Campañas (destacando alto tráfico + baja conversión) ──
+  const totalCampSessions = data.campaigns.reduce((s,c) => s + c.sessions, 0);
+  const campaignsHTML = !data.campaigns.length ? `<p class="empty-state">Sin datos de campañas en este rango</p>` : `
+    <table><tr><th>Campaña</th><th>Sesiones</th><th>Vistas</th><th>Carrito</th><th>Checkout</th><th>Compras</th><th>Ingresos</th><th>Conv.</th></tr>
+    ${data.campaigns.map(c => {
+      const share = totalCampSessions > 0 ? (c.sessions/totalCampSessions*100) : 0;
+      const flagged = share >= 15 && c.purchases === 0 && c.sessions >= 10;
+      return `
+      <tr class="${flagged ? "highlight-row" : ""}">
+        <td><strong>${c.campaign === "(not set)" ? "(sin campaña)" : c.campaign}</strong><br/><span style="color:var(--gray);font-size:.75rem">${c.source}/${c.medium}</span></td>
+        <td>${fmtNum(c.sessions)}</td>
+        <td>${fmtNum(c.view_item)}</td>
+        <td>${fmtNum(c.add_to_cart)}</td>
+        <td>${fmtNum(c.begin_checkout)}</td>
+        <td>${fmtNum(c.purchases)}</td>
+        <td>${fmtMoney(c.revenue)}</td>
+        <td>${c.conversion_rate}% ${flagged ? '<span class="badge badge-warn">Alto tráfico, 0 ventas</span>' : ""}</td>
+      </tr>`;
+    }).join("")}
+    </table>`;
+
+  // ── 5. Destinos ──
+  const destinationsHTML = !data.destinationsAvailable
+    ? `<div class="not-connected">📍 Requiere registrar la Custom Dimension "destination" en GA4 (evento). Ver ANALYTICS_README.md → sección de configuración manual.</div>`
+    : !data.destinations.length ? `<p class="empty-state">Sin datos de destinos en este rango</p>` : `
+    <table><tr><th>Destino</th><th>Búsquedas*</th><th>Vistas</th><th>Selecciones</th><th>Carrito</th><th>Checkout</th><th>Compras</th><th>Ingresos</th><th>Conv.</th></tr>
+    ${data.destinations.slice(0,15).map(d => `
+      <tr class="${d.high_interest_low_conversion ? "highlight-row" : ""}">
+        <td><strong>${d.destination}</strong></td>
+        <td>${fmtNum(d.searches)}</td>
+        <td>${fmtNum(d.views)}</td>
+        <td>${fmtNum(d.selections)}</td>
+        <td>${fmtNum(d.add_to_cart)}</td>
+        <td>${fmtNum(d.checkout)}</td>
+        <td>${fmtNum(d.purchases)}</td>
+        <td>${fmtMoney(d.revenue)}</td>
+        <td>${d.conversion_rate_pct}% ${d.high_interest_low_conversion ? '<span class="badge badge-warn">Alto interés, baja conversión</span>' : ""}</td>
+      </tr>
+    `).join("")}
+    </table>
+    <p style="font-size:.7rem;color:var(--gray);margin-top:10px">*Búsquedas es una estimación por coincidencia de texto (requiere Custom Dimension "search_term" opcional) — ver ANALYTICS_README.md.</p>`;
+
+  // ── 6. Productos/Planes ──
+  const productsHTML = !data.products.length ? `<p class="empty-state">Sin datos de productos en este rango</p>` : `
+    <table><tr><th>Plan</th><th>Vistas</th><th>Carrito</th><th>Checkout</th><th>Compras</th><th>Ingresos</th><th>Conv.</th></tr>
+    ${data.products.slice(0,15).map(p => {
+      const flagged = p.views >= 20 && p.conversion_rate < 1;
+      return `<tr class="${flagged ? "highlight-row" : ""}">
+        <td>${p.plan_name}</td><td>${fmtNum(p.views)}</td><td>${fmtNum(p.added_to_cart)}</td><td>${fmtNum(p.checked_out)}</td><td>${fmtNum(p.purchases)}</td><td>${fmtMoney(p.revenue)}</td>
+        <td>${p.conversion_rate}% ${flagged ? '<span class="badge badge-danger">Interés sin conversión</span>' : ""}</td>
+      </tr>`;
+    }).join("")}
+    </table>`;
+
+  // ── 7. Drop-off ──
+  const dropOffHTML = `
+    ${data.dropOff.biggest_drop_off ? `
+    <div class="biggest-dropoff">
+      <strong style="color:var(--red)">⚠ Mayor punto de abandono:</strong>
+      ${data.dropOff.biggest_drop_off.from} → ${data.dropOff.biggest_drop_off.to}
+      — <strong>${fmtNum(data.dropOff.biggest_drop_off.users_lost)} usuarios (${data.dropOff.biggest_drop_off.drop_off_pct}%)</strong> se pierden aquí
+    </div>` : ""}
+    ${data.dropOff.steps.map(s => `
+      <div class="dropoff-row">
+        <div class="do-path">${s.from} → <span style="color:var(--red)">no</span> ${s.to}</div>
+        <div style="text-align:right">
+          <div class="do-pct" style="color:${s.drop_off_pct >= 70 ? 'var(--red)' : s.drop_off_pct >= 40 ? 'var(--amber)' : 'var(--green)'}">${fmtNum(s.users_lost)} usuarios (${s.drop_off_pct}%)</div>
+          ${s.variation !== null ? `<div style="font-size:.72rem;color:var(--gray)">${s.variation >= 0 ? "+" : ""}${s.variation}pp vs período anterior</div>` : ""}
+        </div>
+      </div>
+    `).join("")}`;
+
+  // ── 8. Insights ──
+  const insightsHTML = data.insights.map(i => `<div class="insight ${i.type}">${i.type === "critical" ? "🔴" : i.type === "warning" ? "🟡" : "🔵"} ${i.text}</div>`).join("");
+
+  // ── FASE 2: Recorrido del usuario (User Journey, 8 pasos) ──
+  const maxJourneyVal = Math.max(...data.journey.map(f => f.value), 1);
+  const journeyHTML = data.journey.map((f) => `
+    <div class="funnel-step">
+      <div class="funnel-row">
+        <span class="fs-label">${f.label} <span style="font-size:.7rem;color:var(--gray);font-weight:400">(${f.metric_used})</span></span>
+        <span class="fs-value">${fmtNum(f.value)}
+          ${f.step_conversion_pct !== null ? `<span class="fs-conv">${f.step_conversion_pct}% del paso anterior</span>` : ""}
+        </span>
+      </div>
+      <div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:${Math.round((f.value/maxJourneyVal)*100)}%"></div></div>
+      ${f.drop_off_pct !== null ? `<div class="funnel-dropoff-tag">↓ ${f.drop_off_pct}% de abandono en este paso · ${f.cumulative_conversion_pct}% conversión acumulada desde Sesiones</div>` : ""}
+    </div>
+  `).join("");
+
+  // ── FASE 2: Checkout Analytics (distingue abandono de fallo de pago) ──
+  const ca = data.checkoutAnalytics;
+  const checkoutHTML = !ca || ca.begin_checkout === 0 ? `<p class="empty-state">Sin datos de checkout en este rango</p>` : `
+    <div class="kpi-grid" style="margin-bottom:0">
+      <div class="kpi-card"><div class="kpi-label">Iniciaron checkout</div><div class="kpi-value">${fmtNum(ca.begin_checkout)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Compraron</div><div class="kpi-value" style="color:var(--green)">${fmtNum(ca.purchases)}</div><div class="kpi-var flat">${ca.purchase_rate_pct}%</div></div>
+      <div class="kpi-card"><div class="kpi-label">Abandono (decidieron no comprar)</div><div class="kpi-value" style="color:var(--amber)">${ca.checkout_abandonment_rate_pct}%</div>
+        <div class="kpi-var flat">${fmtNum(ca.payment_cancelled)} canceladas + ${fmtNum(ca.silent_abandonment)} silenciosas</div></div>
+      <div class="kpi-card"><div class="kpi-label">Fallo de pago (intentaron y falló)</div><div class="kpi-value" style="color:var(--red)">${ca.payment_failure_rate_pct}%</div>
+        <div class="kpi-var flat">${fmtNum(ca.payment_failed)} de ${fmtNum(ca.begin_checkout)}</div></div>
+    </div>
+    <p style="font-size:.78rem;color:var(--gray);margin-top:14px;line-height:1.6">
+      <strong style="color:#fff">Abandono</strong> = el usuario canceló el pago o simplemente se fue, sin error técnico.
+      <strong style="color:#fff">Fallo de pago</strong> = el usuario intentó pagar pero el procesador o el aprovisionamiento del eSIM tuvo un problema — esto es accionable técnicamente.
+    </p>`;
+
+  // ── FASE 2: Conversion Diagnostics (panel resumen) ──
+  const diag = data.diagnostics;
+  const diagnosticsHTML = !diag ? "" : `
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Mayor abandono</div><div class="kpi-value" style="font-size:1.05rem">${diag.biggest_drop_off}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Destino más visto</div><div class="kpi-value" style="font-size:1.05rem">${diag.highest_interest_destination}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Destino con peor conversión</div><div class="kpi-value" style="font-size:1.05rem">${diag.lowest_converting_destination}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Destino con mejor conversión</div><div class="kpi-value" style="font-size:1.05rem">${diag.highest_converting_destination}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Producto más visto</div><div class="kpi-value" style="font-size:1.05rem">${diag.most_viewed_product}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Producto que mejor convierte</div><div class="kpi-value" style="font-size:1.05rem">${diag.best_converting_product}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Tasa de abandono en checkout</div><div class="kpi-value">${diag.checkout_abandonment_rate}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Tasa de fallo de pago</div><div class="kpi-value">${diag.payment_failure_rate}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Conversión mobile</div><div class="kpi-value">${diag.mobile_conversion_rate}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Conversión desktop</div><div class="kpi-value">${diag.desktop_conversion_rate}</div></div>
+    </div>`;
+
+  // ── 9. Países / Dispositivos ──
+  const countriesHTML = data.countryBreakdown.slice(0,10).map(c => `
+    <tr><td>${c.country}</td><td>${fmtNum(c.sessions)}</td><td>${fmtMoney(c.revenue)}</td></tr>`).join("");
+  const devicesHTML = data.deviceBreakdown.map(d => `
+    <tr><td style="text-transform:capitalize">${d.device}</td><td>${fmtNum(d.sessions)}</td><td>${fmtNum(d.product_views)}</td><td>${fmtNum(d.checkout)}</td><td>${fmtNum(d.purchases)}</td>
+    <td>${d.conversion_rate_pct}%</td></tr>`).join("");
+
+  // ── Meta Ads (CAC/ROAS) ──
+  const ma = data.meta_ads;
+  const metaAdsHTML = !ma.connected ? `<div class="not-connected">${ma.message}</div>` : `
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Gasto en anuncios</div><div class="kpi-value">${fmtMoney(ma.spend)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">CPA / CAC</div><div class="kpi-value">${ma.cpa !== null ? fmtMoney(ma.cpa) : "—"}</div></div>
+      <div class="kpi-card"><div class="kpi-label">ROAS</div><div class="kpi-value" style="color:${ma.roas !== null && ma.roas >= 1 ? 'var(--green)' : 'var(--red)'}">${ma.roas !== null ? ma.roas + "x" : "—"}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Impresiones</div><div class="kpi-value">${fmtNum(ma.impressions)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Clics</div><div class="kpi-value">${fmtNum(ma.clicks)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">CTR</div><div class="kpi-value">${ma.ctr}%</div></div>
+    </div>
+    ${ma.campaigns && ma.campaigns.length ? `
+    <table style="margin-top:20px"><tr><th>Campaña</th><th>Gasto</th><th>Impresiones</th><th>Clics</th><th>CTR</th><th>CPC</th></tr>
+    ${ma.campaigns.map(c => `<tr><td>${c.campaign}</td><td>${fmtMoney(c.spend)}</td><td>${fmtNum(c.impressions)}</td><td>${fmtNum(c.clicks)}</td><td>${c.ctr}%</td><td>${fmtMoney(c.cpc)}</td></tr>`).join("")}
+    </table>` : ""}
+    <p style="font-size:.72rem;color:var(--gray);margin-top:10px">CPA/CAC y ROAS combinan el gasto real de Meta con las compras e ingresos ya calculados desde GA4 para este mismo rango de fechas.</p>`;
+
+  content.innerHTML = `
+    ${queryErrorsHTML}
+    ${kpiHTML}
+
+    <div class="section">
+      <div class="section-title">🩺 Conversion Diagnostics</div>
+      <div class="section-sub">Resumen automático — para entender en segundos dónde investigar</div>
+      ${diagnosticsHTML}
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔻 Embudo de conversión (ecommerce)</div>
+      <div class="section-sub">Sesiones se mide en sesiones · el resto en usuarios únicos que dispararon el evento (no en conteo bruto) · <strong style="color:#fff">${fmtNum(k.users.value)} usuarios distintos</strong> generaron estas ${fmtNum(k.sessions.value)} sesiones</div>
+      <div class="card">${funnelHTML}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🧭 Recorrido del usuario (User Journey)</div>
+      <div class="section-sub">Incluye la exploración del catálogo antes de ver un producto · <strong style="color:#fff">${fmtNum(k.users.value)} usuarios distintos</strong></div>
+      <div class="card">${journeyHTML}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📡 Fuentes de tráfico</div>
+      <div class="card">${trafficHTML}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🎯 Rendimiento de campañas</div>
+      <div class="section-sub">Filas resaltadas: mucho tráfico, cero compras</div>
+      <div class="card">${campaignsHTML}</div>
+    </div>
+
+    <div class="grid-2">
+      <div class="section">
+        <div class="section-title">🌍 Destinos</div>
+        <div class="section-sub">Filas resaltadas: alto interés, baja conversión</div>
+        <div class="card">${destinationsHTML}</div>
+      </div>
+      <div class="section">
+        <div class="section-title">📦 Planes / Productos</div>
+        <div class="card">${productsHTML}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">💳 Checkout</div>
+      <div class="section-sub">Distingue abandono (decisión) de fallo de pago (problema técnico)</div>
+      <div class="card">${checkoutHTML}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📉 Conversion Drop-off</div>
+      <div class="card">${dropOffHTML}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">💡 Insights</div>
+      <div class="section-sub">Generados por reglas determinísticas — sin IA</div>
+      ${insightsHTML}
+    </div>
+
+    <div class="grid-2">
+      <div class="section">
+        <div class="section-title">🌎 Por país</div>
+        <div class="card"><table><tr><th>País</th><th>Sesiones</th><th>Ingresos</th></tr>${countriesHTML}</table></div>
+      </div>
+      <div class="section">
+        <div class="section-title">📱 Por dispositivo</div>
+        <div class="card"><table><tr><th>Dispositivo</th><th>Sesiones</th><th>Vistas</th><th>Checkout</th><th>Compras</th><th>Conv.</th></tr>${devicesHTML}</table></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">💰 Meta Ads (CAC / ROAS)</div>
+      ${metaAdsHTML}
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

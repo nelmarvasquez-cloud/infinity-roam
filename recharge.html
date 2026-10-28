@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="topup_page_title">Envía saldo a un celular — Infinity Roam</title>
+  <meta name="description" content="Recarga el celular de un familiar o amigo en más de 100 países, al instante." />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
+  <style>
+    .catalog-hero{background:linear-gradient(135deg,#16223F 0%,#223257 60%,#16223F 100%)!important;padding:100px 20px 40px!important;text-align:center;}
+    .catalog-hero h1{color:#fff!important;font-size:clamp(2rem,5vw,3rem)!important;font-weight:800!important;}
+    .catalog-hero h1 strong{color:var(--ir-cyan,#2864E6)!important;}
+    .catalog-hero p{color:#B0B0B0!important;}
+
+    .topup-wrap{max-width:760px;margin:0 auto;padding:40px 20px 80px;}
+    .topup-card{background:#fff;border:1px solid rgba(15,27,61,0.08);border-radius:20px;padding:28px;box-shadow:0 12px 32px rgba(15,27,61,0.06);margin-bottom:24px;}
+    .topup-label{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px;display:block;}
+    .topup-select, .topup-input{
+      width:100%;padding:13px 16px;border-radius:12px;border:1px solid rgba(15,27,61,0.12);
+      font-size:0.95rem;font-family:'Outfit',sans-serif;color:#0f1b3d;background:#fff;outline:none;
+    }
+    .topup-select:focus, .topup-input:focus{border-color:#2864E6;}
+    .topup-row{margin-bottom:20px;}
+    .topup-offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:8px;}
+    .topup-offer-card{
+      border:2px solid rgba(15,27,61,0.08);border-radius:14px;padding:16px;cursor:pointer;
+      transition:border-color .15s,background .15s;background:#fafbfe;
+    }
+    .topup-offer-card:hover{border-color:rgba(40,100,230,0.35);}
+    .topup-offer-card.selected{border-color:#2864E6;background:#eef4ff;}
+    .topup-offer-brand{font-size:0.72rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:4px;}
+    .topup-offer-amount{font-size:1.3rem;font-weight:800;color:#0f1b3d;}
+    .topup-offer-price{font-size:0.85rem;color:#2864E6;font-weight:700;margin-top:4px;}
+    .topup-country-suggestions{
+      display:none;position:absolute;left:0;right:0;top:calc(100% + 6px);
+      background:#fff;border:1px solid rgba(15,27,61,0.1);border-radius:12px;
+      max-height:260px;overflow-y:auto;box-shadow:0 12px 32px rgba(15,27,61,0.12);z-index:20;
+    }
+    .topup-country-suggestions.open{display:block;}
+    .topup-country-item{display:flex;align-items:center;gap:8px;padding:10px 16px;font-size:0.9rem;color:#0f1b3d;cursor:pointer;}
+    .topup-country-item:hover{background:#eef4ff;}
+    .topup-operator-card{
+      border:2px solid rgba(15,27,61,0.08);border-radius:14px;padding:16px;cursor:pointer;
+      transition:border-color .15s,background .15s;background:#fafbfe;text-align:center;
+    }
+    .topup-operator-card:hover{border-color:rgba(40,100,230,0.35);}
+    .topup-operator-card.selected{border-color:#2864E6;background:#eef4ff;}
+    .topup-operator-name{font-size:0.95rem;font-weight:700;color:#0f1b3d;}
+    .topup-operator-count{font-size:0.75rem;color:#64748b;margin-top:2px;}
+    .topup-empty{color:#64748b;font-size:0.9rem;padding:20px 0;text-align:center;}
+    .topup-loading{color:#64748b;font-size:0.9rem;padding:20px 0;text-align:center;}
+    .topup-continue-btn{
+      display:block;width:100%;padding:15px;background:#2864E6;color:#fff;border:none;border-radius:99px;
+      font-size:1rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s;
+    }
+    .topup-continue-btn:hover:not(:disabled){background:#1f52c4;}
+    .topup-continue-btn:disabled{opacity:0.45;cursor:not-allowed;}
+    .topup-hint{font-size:0.8rem;color:#94a3b8;margin-top:6px;}
+    .topup-error{background:#fee;border:1px solid #fcc;color:#c0392b;padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-top:12px;display:none;}
+  </style>
+</head>
+<body class="catalog-page">
+
+  <nav class="nav ir-dark-nav" id="main-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo ir-logo"></a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav_home">Inicio</a>
+        <a href="catalog.html" data-i18n="nav_plans">Planes eSIM</a>
+        <button id="lang-toggle" class="lang-toggle">EN</button>
+      </div>
+      <div class="nav-right-mobile">
+        <button id="lang-toggle-mobile" class="lang-toggle">EN</button>
+        <button class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="catalog-hero">
+    <div class="container">
+      <h1><span data-i18n="topup_title">Envía</span> <strong data-i18n="topup_title_bold">saldo al instante</strong></h1>
+      <p data-i18n="topup_sub">Recarga el celular de un familiar o amigo en más de 100 países. Sin cuentas, sin apps de terceros.</p>
+    </div>
+  </section>
+
+  <div class="topup-wrap">
+
+    <div class="topup-card">
+      <div class="topup-row">
+        <label class="topup-label" data-i18n="topup_country_label">¿A qué país envías?</label>
+        <div style="position:relative">
+          <input type="text" class="topup-input" id="topup-country-input" placeholder="Escribe o elige un país..." data-i18n-placeholder="topup_country_placeholder" autocomplete="off" />
+          <div class="topup-country-suggestions" id="topup-country-suggestions"></div>
+        </div>
+      </div>
+
+      <div class="topup-row" id="topup-operator-row" style="display:none">
+        <label class="topup-label" data-i18n="topup_operator_label">Elige la operadora</label>
+        <div class="topup-offers-grid" id="topup-operator-grid"></div>
+      </div>
+
+      <div class="topup-row" id="topup-offers-row" style="display:none">
+        <label class="topup-label" data-i18n="topup_amount_label">Elige el monto</label>
+        <div class="topup-offers-grid" id="topup-offers-grid"></div>
+      </div>
+    </div>
+
+    <div class="topup-card" id="topup-recipient-card" style="display:none">
+      <div class="topup-row">
+        <label class="topup-label" data-i18n="topup_recipient_label">Número del destinatario</label>
+        <input type="tel" class="topup-input" id="topup-recipient-phone" placeholder="+502 5555 5555" data-i18n-placeholder="topup_recipient_placeholder" />
+        <p class="topup-hint" data-i18n="topup_recipient_hint">Incluye el código de país (ej. +502 para Guatemala)</p>
+      </div>
+      <div class="topup-row">
+        <label class="topup-label" data-i18n="topup_email_label">Tu correo (para la confirmación)</label>
+        <input type="email" class="topup-input" id="topup-sender-email" placeholder="tu@email.com" />
+      </div>
+      <button class="topup-continue-btn" id="topup-continue-btn" data-i18n="topup_continue_btn">Continuar al pago →</button>
+      <div class="topup-error" id="topup-error"></div>
+    </div>
+
+  </div>
+
+  <script src="config.js"></script>
+  <script src="countries.js"></script>
+  <script src="i18n.js"></script>
+  <script src="zendit.js"></script>
+  <script src="recharge.js"></script>
+  <script src="logo.js"></script>
+  <script src="whatsapp.js"></script>
+  <script>
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.querySelector(".nav-links");
+    if (hamburger && navLinks) {
+      hamburger.addEventListener("click", () => {
+        navLinks.classList.toggle("open");
+        hamburger.classList.toggle("open");
+      });
+    }
+  </script>
+</body>
+</html>

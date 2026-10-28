@@ -1,0 +1,9 @@
+# Secretos y archivos locales: nunca al repositorio
+.env
+.env.*
+*.key
+zendit_key*.txt
+zendit_esim_offers_raw.json
+node_modules/
+.DS_Store
+.netlify/

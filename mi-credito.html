@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QWNLSCXJ9P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QWNLSCXJ9P');
+  </script>
+  <script src="/utm.js"></script>
+  <title>Mi Saldo — Infinity Roam</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --navy:#16223F; --blue:#2864E6; --cyan:#2864E6; --green:#34d399; --red:#f87171; --gray:#B0B0B0; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Outfit',sans-serif; background:var(--navy); color:#fff; min-height:100vh; padding:0 0 48px; }
+
+    /* NAV */
+    .nav { background:rgba(10,10,10,0.95); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.07); padding:0 20px; height:56px; display:flex; align-items:center; }
+    .nav-logo { font-weight:700; font-size:1.05rem; color:#2864E6; }
+    .nav-logo span { color:#C8C8C8; font-weight:400; }
+
+    /* LOGIN */
+    .login-wrap { max-width:420px; margin:80px auto 0; padding:0 20px; text-align:center; }
+    .login-icon { font-size:3rem; margin-bottom:16px; }
+    .login-wrap h1 { font-size:1.8rem; font-weight:800; margin-bottom:8px; }
+    .login-wrap p { color:var(--gray); font-size:0.95rem; margin-bottom:28px; }
+    .code-input { width:100%; padding:14px; background:rgba(255,255,255,0.07); border:1.5px solid rgba(255,255,255,0.15); border-radius:12px; color:#fff; font-size:1.2rem; font-weight:800; text-align:center; letter-spacing:.12em; text-transform:uppercase; outline:none; font-family:'Outfit',sans-serif; }
+    .code-input:focus { border-color:rgba(40,100,230,0.5); }
+    .btn-primary { width:100%; padding:14px; background:var(--blue); color:#ffffff; border:none; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; margin-top:12px; font-family:'Outfit',sans-serif; transition:background .2s; }
+    .btn-primary:hover { background:#4A90E8; }
+    .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+    .err-msg { color:var(--red); font-size:0.85rem; margin-top:10px; }
+
+    /* PORTAL */
+    .portal { max-width:520px; margin:0 auto; padding:24px 20px; }
+
+    /* SALDO CARD */
+    .balance-card { background:linear-gradient(135deg,#223257 0%,#242424 100%); border:1px solid rgba(40,100,230,0.25); border-radius:20px; padding:28px; margin-bottom:16px; }
+    .balance-name { font-size:.78rem; color:var(--gray); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+    .balance-amount { font-size:3.2rem; font-weight:800; color:#fff; line-height:1; margin:6px 0; }
+    .balance-amount span { font-size:1.4rem; color:var(--gray); }
+    .balance-sub { font-size:.82rem; color:var(--gray); margin-top:4px; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:99px; font-size:.8rem; font-weight:700; margin-top:14px; }
+    .badge.ready { background:rgba(52,211,153,.15); color:var(--green); border:1px solid rgba(52,211,153,.3); }
+    .badge.pending { background:rgba(251,191,36,.1); color:#fbbf24; border:1px solid rgba(251,191,36,.25); }
+    .paypal-row { margin-top:14px; font-size:.82rem; color:var(--gray); }
+    .paypal-row strong { color:var(--cyan); }
+
+    /* CODE CARD */
+    .code-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; margin-bottom:16px; text-align:center; }
+    .code-label { font-size:.72rem; color:var(--gray); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
+    .code-val { font-size:2rem; font-weight:800; letter-spacing:.15em; color:#fff; margin-bottom:4px; }
+    .code-hint { font-size:.75rem; color:var(--gray); margin-bottom:12px; }
+    .btn-copy { padding:8px 20px; background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:8px; font-size:.82rem; font-weight:600; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; }
+    .btn-copy:hover { background:rgba(40,100,230,.2); border-color:var(--cyan); }
+
+    /* REDEEM CARD */
+    .redeem-card { background:rgba(52,211,153,.06); border:1px solid rgba(52,211,153,.2); border-radius:16px; padding:20px; margin-bottom:16px; }
+    .redeem-card h3 { font-size:1rem; font-weight:700; margin-bottom:8px; color:var(--green); }
+    .redeem-card p { font-size:.85rem; color:var(--gray); margin-bottom:16px; line-height:1.5; }
+    .btn-request { width:100%; padding:13px; background:var(--green); color:#000; border:none; border-radius:12px; font-size:.95rem; font-weight:800; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; }
+    .btn-request:hover { opacity:.9; }
+    .btn-request:disabled { opacity:.5; cursor:not-allowed; }
+    .request-sent { text-align:center; padding:16px; color:var(--green); font-weight:600; font-size:.9rem; }
+
+    /* SECTION */
+    .section { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; margin-bottom:16px; }
+    .section h3 { font-size:.9rem; font-weight:700; margin-bottom:14px; color:var(--gray); text-transform:uppercase; letter-spacing:.06em; }
+
+    /* ROWS */
+    .row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:.88rem; }
+    .row:last-child { border-bottom:none; }
+    .row-left .row-title { color:#fff; font-weight:600; }
+    .row-left .row-date { color:var(--gray); font-size:.75rem; margin-top:2px; }
+    .row-left .row-note { color:var(--gray); font-size:.75rem; }
+    .amount-pos { color:var(--green); font-weight:700; }
+    .amount-neg { color:var(--red); font-weight:700; }
+    .empty { text-align:center; color:var(--gray); padding:24px 0; font-size:.88rem; }
+
+    /* TOTALS */
+    .totals { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+    .total-item { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:14px; text-align:center; }
+    .total-val { font-size:1.4rem; font-weight:800; }
+    .total-lbl { font-size:.7rem; color:var(--gray); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+    /* LOADING */
+    .loading { text-align:center; padding:80px 20px; color:var(--gray); }
+    .spinner { width:36px; height:36px; border:3px solid rgba(255,255,255,.1); border-top-color:var(--cyan); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .back-btn { background:none; border:none; color:var(--gray); font-size:.8rem; cursor:pointer; font-family:'Outfit',sans-serif; margin-top:8px; display:block; width:100%; text-align:center; }
+    .back-btn:hover { color:#fff; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">Infinity <span>Roam</span></div>
+</nav>
+
+<div id="app"></div>
+
+<script>
+const app = document.getElementById("app");
+const urlCode = new URLSearchParams(window.location.search).get("code") || "";
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function renderLogin(errMsg) {
+  app.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-icon">💳</div>
+      <h1>Mi Saldo</h1>
+      <p>Ingresa tu código de referido para ver tu saldo acumulado y solicitar pagos</p>
+      <input class="code-input" id="code-input" placeholder="TU-CÓDIGO" maxlength="20" value="${urlCode}" />
+      <button class="btn-primary" id="login-btn" onclick="doLogin()">Ver mi saldo</button>
+      ${errMsg ? `<p class="err-msg">${errMsg}</p>` : ""}
+    </div>`;
+  const input = document.getElementById("code-input");
+  if (input) {
+    input.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+    input.addEventListener("input", e => { e.target.value = e.target.value.toUpperCase(); });
+  }
+  if (urlCode) setTimeout(doLogin, 120);
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────────
+async function doLogin() {
+  const input = document.getElementById("code-input");
+  const code  = (input ? input.value : urlCode).trim().toUpperCase();
+  if (!code) return;
+
+  app.innerHTML = `<div class="loading"><div class="spinner"></div>Cargando tu información...</div>`;
+
+  try {
+    const r    = await fetch(`/.netlify/functions/referral?action=get-referrer&code=${encodeURIComponent(code)}`);
+    const data = await r.json();
+    if (!r.ok) { renderLogin(data.error || "Código no encontrado"); return; }
+    renderPortal(data, code);
+  } catch {
+    renderLogin("Error de conexión. Intenta de nuevo.");
+  }
+}
+
+// ── PORTAL ────────────────────────────────────────────────────
+function renderPortal(d, code) {
+  const bal        = parseFloat(d.credit_balance || 0);
+  const totalPaid  = parseFloat(d.total_paid || 0);
+  const totalEarned = bal + totalPaid;
+  const canRedeem  = d.can_redeem;
+  const minRedeem  = d.min_redeem || 10;
+  const uses       = d.uses    || [];
+  const payouts    = d.payouts || [];
+
+  // ── Balance card ──
+  const balanceCard = `
+    <div class="balance-card">
+      <div class="balance-name">Hola, ${d.name} ${d.lastname}</div>
+      <div class="balance-label" style="font-size:.72rem;color:#B0B0B0;text-transform:uppercase;letter-spacing:.08em;margin-top:12px">Saldo disponible</div>
+      <div class="balance-amount">$${bal.toFixed(2)} <span>USD</span></div>
+      <div class="balance-sub">Acumulado en ventas · Mínimo para cobrar: $${minRedeem}</div>
+      <div class="badge ${canRedeem ? "ready" : "pending"}">
+        ${canRedeem ? "✅ Listo para solicitar pago" : `⏳ Faltan $${(minRedeem - bal).toFixed(2)} para poder solicitar`}
+      </div>
+      ${d.paypal_email ? `<div class="paypal-row">💳 Pago via PayPal a: <strong>${d.paypal_email}</strong></div>` : ""}
+    </div>`;
+
+  // ── Code card ──
+  const codeCard = `
+    <div class="code-card">
+      <div class="code-label">Tu código de referido</div>
+      <div class="code-val">${code}</div>
+      <div class="code-hint">Tus contactos obtienen 5% de descuento · Tú ganas 3% en ventas ≥ $5</div>
+      <button class="btn-copy" onclick="copyCode('${code}')">📋 Copiar código</button>
+    </div>`;
+
+  // ── Totals ──
+  const totalsCard = `
+    <div class="totals">
+      <div class="total-item">
+        <div class="total-val" style="color:var(--cyan)">$${totalEarned.toFixed(2)}</div>
+        <div class="total-lbl">Total ganado</div>
+      </div>
+      <div class="total-item">
+        <div class="total-val" style="color:var(--red)">$${totalPaid.toFixed(2)}</div>
+        <div class="total-lbl">Total cobrado</div>
+      </div>
+    </div>`;
+
+  // ── Redeem card ──
+  const redeemCard = canRedeem ? `
+    <div class="redeem-card">
+      <h3>💰 Solicitar pago</h3>
+      <p>Tienes <strong>$${bal.toFixed(2)}</strong> disponibles para cobrar.<br/>
+         Te enviaremos el pago a tu PayPal (<strong>${d.paypal_email || "—"}</strong>) en 24-48 horas hábiles.</p>
+      <button class="btn-request" id="redeem-btn" onclick="requestPayout('${code}', ${bal.toFixed(2)})">
+        Solicitar $${bal.toFixed(2)} → PayPal
+      </button>
+    </div>` : "";
+
+  // ── Sales history ──
+  const salesHTML = uses.length === 0
+    ? `<p class="empty">Aún no tienes ventas con tu código</p>`
+    : uses.map(u => {
+        const earns = u.earns_credit !== false;
+        const credit = parseFloat(u.referrer_credit || 0);
+        return `
+          <div class="row">
+            <div class="row-left">
+              <div class="row-title">Venta generada</div>
+              <div class="row-date">${fmtDate(u.created_at)}</div>
+              ${!earns ? `<div class="row-note">⚠️ Venta bajo monto mínimo — sin crédito</div>` : ""}
+            </div>
+            <div class="${earns && credit > 0 ? "amount-pos" : "amount-neg"}">
+              ${earns && credit > 0 ? "+" : ""}$${credit.toFixed(2)}
+            </div>
+          </div>`;
+      }).join("");
+
+  // ── Payouts history ──
+  const payoutsHTML = payouts.length === 0
+    ? `<p class="empty">Aún no has recibido pagos</p>`
+    : payouts.map(p => `
+        <div class="row">
+          <div class="row-left">
+            <div class="row-title">Pago enviado a PayPal</div>
+            <div class="row-date">${fmtDate(p.paid_at)}</div>
+            ${p.note ? `<div class="row-note">${p.note}</div>` : ""}
+          </div>
+          <div class="amount-neg">-$${parseFloat(p.amount).toFixed(2)}</div>
+        </div>`).join("");
+
+  app.innerHTML = `
+    <div class="portal">
+      ${balanceCard}
+      ${totalsCard}
+      ${redeemCard}
+      ${codeCard}
+      <div class="section">
+        <h3>📊 Historial de ventas (${uses.length})</h3>
+        ${salesHTML}
+      </div>
+      <div class="section">
+        <h3>💸 Pagos recibidos (${payouts.length})</h3>
+        ${payoutsHTML}
+      </div>
+      <button class="back-btn" onclick="renderLogin()">← Cambiar código</button>
+    </div>`;
+}
+
+// ── REQUEST PAYOUT ────────────────────────────────────────────
+async function requestPayout(code, amount) {
+  const btn = document.getElementById("redeem-btn");
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = "Enviando solicitud...";
+
+  try {
+    const r    = await fetch("/.netlify/functions/referral?action=request-payout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+    const data = await r.json();
+    if (r.ok) {
+      const redeemCard = document.querySelector(".redeem-card");
+      if (redeemCard) {
+        redeemCard.innerHTML = `
+          <div class="request-sent">
+            ✅ Solicitud enviada correctamente<br/>
+            <span style="font-size:.82rem;color:#B0B0B0;font-weight:400">Te contactaremos en 24-48 horas hábiles a tu PayPal</span>
+          </div>`;
+      }
+    } else {
+      btn.disabled = false;
+      btn.textContent = `Solicitar $${amount} → PayPal`;
+      alert(data.error || "Error al enviar solicitud. Intenta de nuevo.");
+    }
+  } catch {
+    btn.disabled = false;
+    btn.textContent = `Solicitar $${amount} → PayPal`;
+    alert("Error de conexión. Intenta de nuevo.");
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function copyCode(code) {
+  navigator.clipboard.writeText(code).then(() => {
+    const btns = document.querySelectorAll(".btn-copy");
+    btns.forEach(b => { b.textContent = "✅ ¡Copiado!"; });
+    setTimeout(() => btns.forEach(b => { b.textContent = "📋 Copiar código"; }), 2000);
+  });
+}
+
+function fmtDate(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("es", { day:"2-digit", month:"short", year:"numeric" });
+}
+
+renderLogin();
+</script>
+</body>
+</html>

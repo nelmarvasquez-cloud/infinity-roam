@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QWNLSCXJ9P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QWNLSCXJ9P');
+  </script>
+  <script src="/utm.js"></script>
+  <title>Infinity Roam — eSIM Global</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#16223F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Infinity Roam" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <meta name="description" content="eSIM digital para viajeros. Conectividad instantánea en 190+ países, sin roaming ni SIM física. Actívala en minutos con un código QR desde $3.19 USD." />
+  <link rel="canonical" href="https://infinity-roam.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Infinity Roam — eSIM Global" />
+  <meta property="og:description" content="eSIM digital para viajeros. Conectividad instantánea en 190+ países, sin roaming ni SIM física. Desde $3.19 USD." />
+  <meta property="og:url" content="https://infinity-roam.com/" />
+  <meta property="og:image" content="https://infinity-roam.com/icons/icon-512.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Infinity Roam — eSIM Global" />
+  <meta name="twitter:description" content="eSIM digital para viajeros en 190+ países. Sin roaming, activación instantánea." />
+  <meta name="twitter:image" content="https://infinity-roam.com/icons/icon-512.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Infinity Roam","alternateName":"InfinityRoam","url":"https://infinity-roam.com/","description":"Tienda de eSIM digital para viajeros. Conectividad instantánea en más de 190 países, sin roaming ni SIM física.","logo":{"@type":"ImageObject","url":"https://infinity-roam.com/icons/icon-512.png","width":512,"height":512},"sameAs":["https://www.instagram.com/infinityroam/","https://www.tiktok.com/@infinityroam"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Infinity Roam","url":"https://infinity-roam.com/","potentialAction":{"@type":"SearchAction","target":"https://infinity-roam.com/catalog.html?search={search_term_string}","query-input":"required name=search_term_string"}}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
+  <style>
+    :root {
+      --ir-navy:   #16223F;
+      --ir-navy2:  #223257;
+      --ir-blue:   #2864E6;
+      --ir-blue2:  #4A90E8;
+      --ir-cyan:   #2864E6;
+      --ir-cyan2:  #4A90E8;
+      --ir-white:  #ffffff;
+      --ir-gray:   #B0B0B0;
+      --ir-gold:   #2864E6;
+      /* Paleta clara — hero / cómo funciona / planes populares */
+      --ir-light-bg:    #f5f7fc;
+      --ir-light-badge: #e9eefd;
+      --ir-text-dark:   #0f1b3d;
+      --ir-text-gray:   #64748b;
+      --ir-card-shadow: 0 12px 32px rgba(15, 27, 61, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--ir-navy); color: var(--ir-white); }
+
+    /* ── NAV ── */
+    .ir-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(15,27,61,0.06);
+    }
+    .ir-nav-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 20px;
+      display: flex; align-items: center; justify-content: space-between; height: 60px;
+    }
+    .ir-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .ir-logo svg { width: 28px; height: 18px; }
+    .ir-logo-text { font-size: 1.1rem; font-weight: 700; color: #2864E6; }
+    .ir-logo-text strong { color: #94a3b8; font-weight: 400; }
+    .ir-nav-links { display: flex; align-items: center; gap: 24px; }
+    .ir-nav-links a { color: #475569; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color .2s; }
+    .ir-nav-links a:hover { color: var(--ir-text-dark); }
+    .ir-btn-nav {
+      background: var(--ir-blue); color: #ffffff; padding: 8px 20px;
+      border-radius: 99px; font-size: 0.88rem; font-weight: 700; text-decoration: none;
+      transition: background .2s;
+    }
+    .ir-btn-nav:hover { background: var(--ir-blue2); }
+    .ir-lang { background: var(--ir-light-badge); color: #334155; border: none; padding: 6px 14px; border-radius: 99px; font-size: 0.82rem; cursor: pointer; font-family: 'Outfit', sans-serif; }
+    .ir-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; }
+    .ir-hamburger span { display: block; width: 22px; height: 2px; background: var(--ir-text-dark); border-radius: 2px; }
+    @media (max-width: 768px) {
+      .ir-nav-links { display: none; }
+      .ir-hamburger { display: flex; }
+      .ir-nav-links.open {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(15,27,61,0.08);
+        padding: 16px 24px 20px;
+        box-shadow: 0 12px 24px rgba(15,27,61,0.08);
+      }
+      .ir-nav-links.open a { padding: 10px 0; width: 100%; color: #334155; }
+      .ir-nav-links.open .ir-lang { display: none; }
+      .ir-nav-links.open .ir-btn-nav { margin-top: 8px; text-align: center; }
+      .ir-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      .ir-hamburger.open span:nth-child(2) { opacity: 0; }
+      .ir-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    }
+
+    /* ── HERO ── */
+    .ir-hero {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #eef2fd 0%, #f5f7fc 45%, #f7f9fc 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 100px 20px 60px; position: relative; overflow: hidden;
+    }
+    .ir-hero-grid {
+      position: relative; z-index: 1; width: 100%; max-width: 1180px;
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center;
+    }
+    .ir-hero-content { text-align: left; }
+    .ir-hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--ir-light-badge); border: 1px solid rgba(40,100,230,0.18);
+      color: var(--ir-blue); padding: 6px 16px; border-radius: 99px; font-size: 0.82rem; font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .ir-hero h1 {
+      font-size: clamp(2.4rem, 4.6vw, 3.8rem); font-weight: 800; line-height: 1.1;
+      margin-bottom: 18px; color: var(--ir-text-dark);
+    }
+    .ir-hero h1 em { color: var(--ir-blue); font-style: normal; }
+    .ir-hero p {
+      font-size: clamp(1rem, 1.6vw, 1.15rem); color: var(--ir-text-gray);
+      max-width: 480px; margin: 0 0 32px; line-height: 1.6;
+    }
+
+    /* ── BUSCADOR (estilo Holafly) ── */
+    .ir-hero-search { margin-bottom: 20px; }
+    .ir-advisor-trigger {
+      display: inline-flex; align-items: center; gap: 8px; margin: 0 0 28px;
+      background: var(--ir-light-badge); border: 1px solid rgba(40,100,230,0.25);
+      color: var(--ir-blue); padding: 11px 20px; border-radius: 99px;
+      font-size: 0.85rem; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif;
+      transition: background .2s, border-color .2s;
+    }
+    .ir-advisor-trigger:hover { background: #dde6fc; border-color: rgba(40,100,230,0.4); }
+    .ir-advisor-trigger-icon { font-size: 1.05rem; }
+    .ir-hero-search-wrap {
+      position: relative; display: flex; align-items: center; gap: 4px;
+      background: var(--ir-white); border: 1px solid rgba(15,27,61,0.08); border-radius: 99px; padding: 6px 6px 6px 20px;
+      box-shadow: var(--ir-card-shadow);
+      max-width: 480px;
+    }
+    .ir-hero-search-icon { color: var(--ir-text-dark); opacity: 0.4; flex-shrink: 0; }
+    .ir-hero-search-input {
+      flex: 1; border: none; outline: none; background: transparent;
+      font-family: 'Outfit', sans-serif; font-size: 0.95rem; color: var(--ir-text-dark);
+      padding: 12px 8px; min-width: 0;
+    }
+    .ir-hero-search-input::placeholder { color: #9aa2b4; }
+    .ir-hero-search-btn {
+      background: var(--ir-blue); color: #fff; border: none; cursor: pointer;
+      padding: 12px 22px; border-radius: 99px; font-size: 0.9rem; font-weight: 700;
+      font-family: 'Outfit', sans-serif; white-space: nowrap; transition: background .2s;
+      flex-shrink: 0;
+    }
+    .ir-hero-search-btn:hover { background: var(--ir-blue2); }
+    .ir-hero-suggestions {
+      display: none; position: absolute; left: 0; right: 0; top: calc(100% + 10px);
+      background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 16px 40px rgba(15,27,61,0.14); max-height: 300px; overflow-y: auto; z-index: 50;
+    }
+    .ir-hero-suggestions.open { display: block; }
+    .ir-suggestion-item {
+      display: flex; align-items: center; gap: 10px; padding: 11px 18px;
+      font-size: 0.9rem; color: var(--ir-text-dark); cursor: pointer; transition: background .15s;
+    }
+    .ir-suggestion-item:hover, .ir-suggestion-item.active { background: var(--ir-light-badge); }
+    .ir-suggestion-flag { font-size: 1.15rem; }
+
+    .ir-hero-btns { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 44px; }
+    .ir-btn-ghost-sm {
+      color: #475569; text-decoration: none; font-size: 0.88rem; font-weight: 600;
+      border-bottom: 1px solid rgba(15,27,61,0.2); padding-bottom: 2px; transition: color .2s, border-color .2s;
+    }
+    .ir-btn-ghost-sm:hover { color: var(--ir-text-dark); border-color: var(--ir-text-dark); }
+
+    .ir-btn-primary {
+      background: var(--ir-blue); color: #ffffff; padding: 14px 32px;
+      border-radius: 99px; font-size: 1rem; font-weight: 700; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px; transition: background .2s, transform .2s;
+    }
+    .ir-btn-primary:hover { background: var(--ir-blue2); transform: translateY(-2px); }
+    .ir-btn-ghost {
+      background: var(--ir-light-badge); color: var(--ir-blue); padding: 14px 32px;
+      border-radius: 99px; font-size: 1rem; font-weight: 600; text-decoration: none;
+      border: 1px solid rgba(40,100,230,0.2); transition: background .2s;
+    }
+    .ir-btn-ghost:hover { background: #dde6fc; }
+    .ir-hero-stats {
+      display: flex; gap: 28px; flex-wrap: wrap; align-items: center;
+    }
+    .ir-hero-stats::before { content: none; }
+    .ir-stat { text-align: left; position: relative; padding-right: 28px; }
+    .ir-stat:not(:last-child)::after {
+      content: ''; position: absolute; right: 0; top: 4px; bottom: 4px; width: 1px; background: rgba(15,27,61,0.12);
+    }
+    .ir-stat-num { font-size: 1.7rem; font-weight: 800; color: var(--ir-text-dark); }
+    .ir-stat-label { font-size: 0.78rem; color: var(--ir-text-gray); margin-top: 2px; }
+
+    /* ── VISUAL (foto + elementos decorativos) ── */
+    .ir-hero-visual { position: relative; display: flex; align-items: center; justify-content: center; }
+    .ir-hero-visual-pin {
+      position: absolute; right: -6%; top: 8%; width: 46%; opacity: 0.06; z-index: 0;
+      color: var(--ir-blue); pointer-events: none;
+    }
+    .ir-hero-visual-plane {
+      position: absolute; top: 2%; right: 4%; width: 30%; z-index: 2; pointer-events: none;
+      color: var(--ir-blue); opacity: 0.55;
+    }
+    .ir-hero-visual-frame {
+      position: relative; z-index: 1; border-radius: 28px; overflow: hidden;
+      box-shadow: var(--ir-card-shadow), 0 0 0 1px rgba(15,27,61,0.04);
+      max-width: 380px;
+    }
+    .ir-hero-visual-frame img { display: block; width: 100%; height: auto; }
+    .ir-hero-visual::before {
+      content: ''; position: absolute; inset: -20px; z-index: -1;
+      background: radial-gradient(circle at 65% 35%, rgba(40,100,230,0.14) 0%, transparent 62%);
+      filter: blur(6px);
+    }
+
+    @media (max-width: 900px) {
+      .ir-hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .ir-hero-content { text-align: center; }
+      .ir-hero p { margin: 0 auto 28px; }
+      .ir-hero-search-wrap { margin: 0 auto; }
+      .ir-hero-btns { justify-content: center; }
+      .ir-hero-stats { justify-content: center; }
+      .ir-stat { text-align: center; }
+      .ir-hero-visual { order: -1; max-width: 380px; margin: 0 auto; }
+      .ir-hero-visual-pin, .ir-hero-visual-plane { display: none; }
+    }
+    @media (max-width: 480px) {
+      .ir-hero-search-wrap { flex-wrap: wrap; border-radius: 22px; padding: 14px; }
+      .ir-hero-search-icon { display: none; }
+      .ir-hero-search-input { width: 100%; padding: 8px 4px; }
+      .ir-hero-search-btn { width: 100%; }
+    }
+
+    /* ── SECTION BASE ── */
+    .ir-section { padding: 80px 20px; }
+    .ir-section-dark { background: var(--ir-navy2); }
+    .ir-section-darker { background: var(--ir-navy); }
+    .ir-section-light { background: var(--ir-light-bg); }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .ir-eyebrow {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--ir-cyan); margin-bottom: 12px;
+    }
+    .ir-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; margin-bottom: 12px; line-height: 1.2;
+    }
+    .ir-title strong { color: var(--ir-cyan); }
+    .ir-sub { color: var(--ir-gray); font-size: 1rem; margin-bottom: 48px; max-width: 560px; }
+    /* Overrides de color para secciones de tema claro */
+    .ir-section-light .ir-eyebrow { color: var(--ir-blue); }
+    .ir-section-light .ir-title { color: var(--ir-text-dark); }
+    .ir-section-light .ir-title strong { color: var(--ir-blue); }
+    .ir-section-light .ir-sub { color: var(--ir-text-gray); }
+
+    /* ── BANNER ENVÍA SALDO ── */
+    .ir-topup-banner { background: var(--ir-light-bg); padding: 0 20px 56px; }
+    .ir-topup-banner-inner {
+      display: flex; align-items: center; gap: 24px; text-decoration: none;
+      background: linear-gradient(120deg, #16223F 0%, #2864E6 100%);
+      border-radius: 22px; padding: 28px 32px; box-shadow: var(--ir-card-shadow);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .ir-topup-banner-inner:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(15,27,61,0.18); }
+    .ir-topup-banner-icon {
+      flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+    }
+    .ir-topup-banner-text { flex: 1; min-width: 0; }
+    .ir-topup-banner-eyebrow { font-size: 0.7rem; font-weight: 800; letter-spacing: .1em; color: #9db6f5; margin-bottom: 4px; }
+    .ir-topup-banner-text h3 { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .ir-topup-banner-sub { font-size: 0.85rem; color: #c3cee8; line-height: 1.5; max-width: 640px; }
+    .ir-topup-banner-cta {
+      flex-shrink: 0; background: #fff; color: var(--ir-blue); font-weight: 700; font-size: 0.9rem;
+      padding: 11px 22px; border-radius: 99px; white-space: nowrap;
+    }
+    @media (max-width: 720px) {
+      .ir-topup-banner-inner { flex-direction: column; text-align: center; padding: 28px 22px; }
+      .ir-topup-banner-cta { width: 100%; text-align: center; }
+    }
+
+    /* ── COMO FUNCIONA ── */
+    .ir-steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px;
+    }
+    .ir-step {
+      background: var(--ir-white); border: 1px solid rgba(15,27,61,0.06);
+      border-radius: 20px; padding: 32px 24px; text-align: center; position: relative;
+      box-shadow: var(--ir-card-shadow);
+    }
+    .ir-step-num {
+      position: absolute; top: 16px; left: 20px;
+      width: 28px; height: 28px; background: var(--ir-blue); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 800; color: var(--ir-white);
+    }
+    .ir-step-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--ir-light-badge); border: 2px solid rgba(40,100,230,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; margin: 0 auto 16px;
+    }
+    .ir-step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--ir-text-dark); }
+    .ir-step p { font-size: 0.88rem; color: var(--ir-text-gray); line-height: 1.5; }
+
+    /* ── PLAN CARDS ── */
+    .ir-plans-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+      margin-bottom: 36px;
+    }
+    .ir-plan-card {
+      background: var(--ir-white); border: 1px solid rgba(15,27,61,0.06);
+      border-radius: 20px; overflow: hidden; position: relative;
+      box-shadow: var(--ir-card-shadow);
+      display: flex; flex-direction: column;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .ir-plan-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(15,27,61,0.14); }
+    .ir-plan-photo {
+      position: relative; padding: 20px; min-height: 200px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      background: var(--plan-gradient, linear-gradient(135deg, #16223F 0%, #2864E6 100%));
+      overflow: hidden;
+    }
+    .ir-plan-photo::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 85% 15%, rgba(255,255,255,0.18) 0%, transparent 45%);
+    }
+    .ir-plan-badge-popular {
+      position: absolute; top: 14px; right: 14px; z-index: 2;
+      background: #ffffff; color: var(--ir-blue); font-size: 0.72rem; font-weight: 800;
+      padding: 5px 12px; border-radius: 99px; box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .ir-plan-top { position: relative; z-index: 1; }
+    .ir-plan-flag { font-size: 1.7rem; margin-bottom: 8px; display: block; }
+    .ir-plan-country { font-size: 0.75rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.85); margin-bottom: 2px; }
+    .ir-plan-name { font-size: 1.25rem; font-weight: 800; color: #ffffff; margin-bottom: 0; }
+    .ir-plan-details { display: flex; gap: 8px; flex-wrap: wrap; position: relative; z-index: 1; margin-top: 14px; }
+    .ir-plan-chip {
+      background: rgba(255,255,255,0.92); color: var(--ir-text-dark);
+      border-radius: 8px; padding: 4px 9px; font-size: 0.72rem; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .ir-plan-footer { padding: 18px 20px 20px; }
+    .ir-plan-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 14px; }
+    .ir-plan-price-amt { font-size: 1.7rem; font-weight: 800; color: var(--ir-text-dark); }
+    .ir-plan-price-cur { font-size: 0.85rem; color: var(--ir-text-gray); }
+    .ir-plan-btn {
+      display: block; width: 100%; padding: 13px;
+      background: var(--ir-blue); color: #ffffff; border: none; border-radius: 99px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer; text-align: center;
+      text-decoration: none; transition: background .2s;
+    }
+    .ir-plan-btn:hover { background: var(--ir-blue2); }
+
+    /* ── POR QUE ELEGIRNOS ── */
+    .ir-why-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;
+    }
+    .ir-why-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 28px 20px; text-align: center;
+    }
+    .ir-why-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(40,100,230,0.2); border: 2px solid rgba(40,100,230,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin: 0 auto 16px;
+    }
+    .ir-why-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .ir-why-card p { font-size: 0.85rem; color: var(--ir-gray); line-height: 1.5; }
+
+    /* ── FAQ ── */
+    .ir-faq-list { max-width: 700px; margin: 0 auto; }
+    .ir-faq-item { border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .ir-faq-q {
+      width: 100%; background: none; border: none; color: var(--ir-white); text-align: left;
+      padding: 20px 0; font-size: 1rem; font-weight: 600; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: 'Outfit', sans-serif;
+    }
+    .ir-faq-icon { font-size: 1.2rem; color: var(--ir-cyan); transition: transform .2s; }
+    .ir-faq-a { color: var(--ir-gray); font-size: 0.9rem; line-height: 1.6; padding-bottom: 16px; display: none; }
+    .ir-faq-item.open .ir-faq-icon { transform: rotate(45deg); }
+    .ir-faq-item.open .ir-faq-a { display: block; }
+
+    /* ── FOOTER ── */
+    .ir-footer { background: #16223F; padding: 48px 20px 24px; }
+    .ir-footer-inner { max-width: 1100px; margin: 0 auto; }
+    .ir-footer-top { display: flex; gap: 40px; flex-wrap: wrap; justify-content: space-between; margin-bottom: 40px; }
+    .ir-footer-brand p { color: var(--ir-gray); font-size: 0.88rem; margin-top: 10px; max-width: 240px; }
+    .ir-footer-social { display: flex; gap: 14px; margin-top: 16px; }
+    .ir-footer-social a { color: var(--ir-gray); display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.06); transition: color .2s, background .2s; }
+    .ir-footer-social a:hover { color: var(--ir-white); background: var(--ir-blue); }
+    .ir-footer-cols { display: flex; gap: 40px; flex-wrap: wrap; }
+    .ir-footer-col h4 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--ir-cyan); margin-bottom: 12px; }
+    .ir-footer-col a { display: block; color: var(--ir-gray); text-decoration: none; font-size: 0.88rem; margin-bottom: 8px; transition: color .2s; }
+    .ir-footer-col a:hover { color: var(--ir-white); }
+    .ir-footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .ir-footer-bottom p { color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+
+    @media (max-width: 600px) {
+      .ir-hero-stats { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="ir-nav">
+    <div class="ir-nav-inner">
+      <a href="index.html" class="ir-logo"></a>
+      <div class="ir-nav-links">
+        <a href="#como-funciona" data-i18n="nav_how">Cómo funciona</a>
+        <a href="#planes" data-i18n="nav_plans">Planes</a>
+        <a href="recharge.html" data-i18n="nav_topup">Recargas</a>
+        <a href="blog.html" data-i18n="nav_blog">Blog</a>
+        <a href="#faq">FAQ</a>
+        <button class="ir-lang" id="lang-toggle">EN</button>
+        <a href="catalog.html" class="ir-btn-nav" data-i18n="nav_cta">Ver planes →</a>
+      </div>
+      <div class="nav-right-mobile">
+        <button class="ir-lang" id="lang-toggle-mobile">EN</button>
+        <button class="ir-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="ir-hero">
+    <div class="ir-hero-grid">
+      <div class="ir-hero-content">
+        <div class="ir-hero-badge">
+          <span>🌐</span> <span data-i18n="hero_badge">Disponible en 190+ países</span>
+        </div>
+        <h1>
+          <span data-i18n="hero_title_1">Estar conectado</span><br/>
+          <em data-i18n="hero_title_2">es parte del viaje</em>
+        </h1>
+        <p data-i18n="hero_sub">Actívala antes de volar y paga una sola vez — sin sorpresas en tu factura al volver a casa.</p>
+
+        <!-- BUSCADOR DE DESTINO -->
+        <form class="ir-hero-search" id="hero-search-form" role="search" autocomplete="off">
+          <div class="ir-hero-search-wrap" id="hero-search-wrap">
+            <svg class="ir-hero-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <input type="text" id="hero-search-input" class="ir-hero-search-input" placeholder="¿A dónde viajas? Ej. España, Japón, USA..." data-i18n-placeholder="hero_search_placeholder" />
+            <button type="submit" class="ir-hero-search-btn">
+              <span data-i18n="hero_search_btn">Buscar plan</span>
+            </button>
+            <div class="ir-hero-suggestions" id="hero-search-suggestions"></div>
+          </div>
+        </form>
+
+        <button type="button" id="advisor-trigger" class="ir-advisor-trigger">
+          <span class="ir-advisor-trigger-icon">🧭</span>
+          <span data-i18n="advisor_trigger">¿No sabes qué plan elegir? Te ayudamos en 30 segundos →</span>
+        </button>
+
+        <div class="ir-hero-btns">
+          <a href="catalog.html" class="ir-btn-ghost-sm" data-i18n="hero_cta_1">Ver catálogo completo</a>
+          <a href="#como-funciona" class="ir-btn-ghost-sm" data-i18n="hero_cta_2">Cómo funciona</a>
+        </div>
+
+        <div class="ir-hero-stats">
+          <div class="ir-stat"><div class="ir-stat-num">190+</div><div class="ir-stat-label" data-i18n="stat_countries">Países</div></div>
+          <div class="ir-stat"><div class="ir-stat-num">5,400+</div><div class="ir-stat-label" data-i18n="stat_plans">Planes disponibles</div></div>
+          <div class="ir-stat"><div class="ir-stat-num">24/7</div><div class="ir-stat-label" data-i18n="stat_support">Soporte</div></div>
+          <div class="ir-stat"><div class="ir-stat-num">⚡</div><div class="ir-stat-label" data-i18n="stat_instant">Activación inmediata</div></div>
+        </div>
+      </div>
+
+      <div class="ir-hero-visual">
+        <svg class="ir-hero-visual-pin" viewBox="0 0 100 130" fill="none" aria-hidden="true">
+          <path d="M50 0C27.9 0 10 17.9 10 40C10 70 50 130 50 130C50 130 90 70 90 40C90 17.9 72.1 0 50 0Z" fill="currentColor"/>
+          <circle cx="50" cy="40" r="16" fill="#f5f7fc"/>
+        </svg>
+        <svg class="ir-hero-visual-plane" viewBox="0 0 120 80" fill="none" aria-hidden="true">
+          <path d="M4 60C30 60 55 40 60 20" stroke="currentColor" stroke-width="2" stroke-dasharray="4 6" fill="none"/>
+          <path d="M60 20l-9 1 4-8-4-9 12 4 6-9 2 12 12 3-10 7z" fill="currentColor"/>
+        </svg>
+        <div class="ir-hero-visual-frame">
+          <picture>
+            <source srcset="/images/hero-collage.webp" type="image/webp" />
+            <img src="/images/hero-collage.jpg" alt="Viajeros conectados con eSIM Infinity Roam en distintos destinos del mundo" width="1100" height="733" loading="eager" fetchpriority="high" />
+          </picture>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANNER: ENVÍA SALDO -->
+  <section class="ir-topup-banner">
+    <div class="container">
+      <a href="recharge.html" class="ir-topup-banner-inner">
+        <div class="ir-topup-banner-icon">📲</div>
+        <div class="ir-topup-banner-text">
+          <p class="ir-topup-banner-eyebrow" data-i18n="topup_banner_eyebrow">TAMBIÉN PUEDES</p>
+          <h3 data-i18n="topup_banner_title">Recarga tu SIM local sin salir de donde estás</h3>
+          <p class="ir-topup-banner-sub" data-i18n="topup_banner_sub">Fácil, sin apps nuevas y sin complicaciones — envía saldo a un número local en segundos, desde tu hotel, tu café favorito o donde te agarre el viaje.</p>
+        </div>
+        <div class="ir-topup-banner-cta" data-i18n="topup_banner_cta">Enviar saldo →</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="ir-section ir-section-light" id="como-funciona">
+    <div class="container">
+      <p class="ir-eyebrow" data-i18n="how_tag">¿Cómo funciona?</p>
+      <h2 class="ir-title"><span data-i18n="how_title">Tres pasos</span> <strong data-i18n="how_title_bold">simples</strong></h2>
+      <p class="ir-sub" data-i18n="how_sub">Sin visitar una tienda. Sin esperar un courier. 100% digital.</p>
+      <div class="ir-steps">
+        <div class="ir-step">
+          <div class="ir-step-num">1</div>
+          <div class="ir-step-icon">🛒</div>
+          <h3 data-i18n="step1_title">Elige tu plan</h3>
+          <p data-i18n="step1_desc">Selecciona el destino y la cantidad de datos que necesitas para tu viaje.</p>
+        </div>
+        <div class="ir-step">
+          <div class="ir-step-num">2</div>
+          <div class="ir-step-icon">📲</div>
+          <h3 data-i18n="step2_title">Paga en segundos</h3>
+          <p data-i18n="step2_desc">Pago seguro con PayPal. Recibes el QR en tu correo al instante.</p>
+        </div>
+        <div class="ir-step">
+          <div class="ir-step-num">3</div>
+          <div class="ir-step-icon">📡</div>
+          <h3 data-i18n="step3_title">Escanea y conéctate</h3>
+          <p data-i18n="step3_desc">Escanea el QR con tu dispositivo y queda conectado en minutos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANES POPULARES -->
+  <section class="ir-section ir-section-light" id="planes" style="background:#ffffff">
+    <div class="container">
+      <p class="ir-eyebrow" data-i18n="plans_tag">Planes</p>
+      <h2 class="ir-title"><span data-i18n="plans_title">Los más</span> <strong data-i18n="plans_title_bold">populares</strong></h2>
+      <p class="ir-sub" data-i18n="plans_sub">Elige el plan perfecto para tu viaje.</p>
+
+      <!-- PLANES DESTACADOS -->
+      <div class="ir-plans-grid">
+
+        <!-- USA -->
+        <div class="ir-plan-card">
+          <div class="ir-plan-photo" style="--plan-gradient: linear-gradient(135deg, #16223F 0%, #2864E6 100%);">
+            <div class="ir-plan-badge-popular">⭐ <span data-i18n="plan_popular">Popular</span></div>
+            <div class="ir-plan-top">
+              <span class="ir-plan-flag">🇺🇸</span>
+              <div class="ir-plan-country">Estados Unidos</div>
+              <div class="ir-plan-name" data-i18n="plan_us_name">10GB · 30 días</div>
+            </div>
+            <div class="ir-plan-details">
+              <span class="ir-plan-chip">📶 10GB</span>
+              <span class="ir-plan-chip">📅 30 días</span>
+              <span class="ir-plan-chip">⚡ 4G/LTE</span>
+            </div>
+          </div>
+          <div class="ir-plan-footer">
+            <div class="ir-plan-price">
+              <span class="ir-plan-price-amt">$15.11</span>
+              <span class="ir-plan-price-cur">USD</span>
+            </div>
+            <a href="catalog.html?search=United%20States" class="ir-plan-btn" data-i18n="plan_cta">Ver planes USA →</a>
+          </div>
+        </div>
+
+        <!-- MEXICO -->
+        <div class="ir-plan-card">
+          <div class="ir-plan-photo" style="--plan-gradient: linear-gradient(135deg, #16223F 0%, #4A90E8 100%);">
+            <div class="ir-plan-badge-popular">⭐ <span data-i18n="plan_popular">Popular</span></div>
+            <div class="ir-plan-top">
+              <span class="ir-plan-flag">🇲🇽</span>
+              <div class="ir-plan-country">México</div>
+              <div class="ir-plan-name" data-i18n="plan_mx_name">10GB · 30 días</div>
+            </div>
+            <div class="ir-plan-details">
+              <span class="ir-plan-chip">📶 10GB</span>
+              <span class="ir-plan-chip">📅 30 días</span>
+              <span class="ir-plan-chip">⚡ 4G/LTE</span>
+            </div>
+          </div>
+          <div class="ir-plan-footer">
+            <div class="ir-plan-price">
+              <span class="ir-plan-price-amt">$15.03</span>
+              <span class="ir-plan-price-cur">USD</span>
+            </div>
+            <a href="catalog.html?search=Mexico" class="ir-plan-btn" data-i18n="plan_cta_mx">Ver planes México →</a>
+          </div>
+        </div>
+
+        <!-- CANADA -->
+        <div class="ir-plan-card">
+          <div class="ir-plan-photo" style="--plan-gradient: linear-gradient(135deg, #223257 0%, #2864E6 60%, #4A90E8 100%);">
+            <div class="ir-plan-badge-popular">⭐ <span data-i18n="plan_popular">Popular</span></div>
+            <div class="ir-plan-top">
+              <span class="ir-plan-flag">🇨🇦</span>
+              <div class="ir-plan-country">Canadá</div>
+              <div class="ir-plan-name" data-i18n="plan_ca_name">10GB · 30 días</div>
+            </div>
+            <div class="ir-plan-details">
+              <span class="ir-plan-chip">📶 10GB</span>
+              <span class="ir-plan-chip">📅 30 días</span>
+              <span class="ir-plan-chip">⚡ 4G/LTE</span>
+            </div>
+          </div>
+          <div class="ir-plan-footer">
+            <div class="ir-plan-price">
+              <span class="ir-plan-price-amt">$19.07</span>
+              <span class="ir-plan-price-cur">USD</span>
+            </div>
+            <a href="catalog.html?search=Canada" class="ir-plan-btn" data-i18n="plan_cta_ca">Ver planes Canadá →</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- OTROS POPULARES (dinámicos desde API) -->
+      <p class="ir-eyebrow" style="margin-top:48px;margin-bottom:24px" data-i18n="plans_other">Otros destinos populares</p>
+      <div class="ir-plans-grid" id="featured-grid">
+        <div style="background:#eef1f8;border:1px solid rgba(15,27,61,0.06);border-radius:20px;height:260px;animation:pulse 1.5s infinite"></div>
+        <div style="background:#eef1f8;border:1px solid rgba(15,27,61,0.06);border-radius:20px;height:260px;animation:pulse 1.5s infinite"></div>
+        <div style="background:#eef1f8;border:1px solid rgba(15,27,61,0.06);border-radius:20px;height:260px;animation:pulse 1.5s infinite"></div>
+      </div>
+      <style>@keyframes pulse{0%,100%{opacity:.4}50%{opacity:.7}}</style>
+
+      <div style="text-align:center;margin-top:36px">
+        <a href="catalog.html" class="ir-btn-primary" data-i18n="plans_cta">Explorar los 5,400+ planes →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- POR QUE ELEGIRNOS -->
+  <section class="ir-section ir-section-dark">
+    <div class="container">
+      <p class="ir-eyebrow" data-i18n="why_tag">¿Por qué elegirnos?</p>
+      <h2 class="ir-title"><strong data-i18n="why_title_bold">Viaja</strong> <span data-i18n="why_title">sin preocupaciones</span></h2>
+      <p class="ir-sub" data-i18n="why_sub">Todo lo que necesitas para estar conectado donde vayas.</p>
+      <div class="ir-why-grid">
+        <div class="ir-why-card">
+          <div class="ir-why-icon">🚫</div>
+          <h3 data-i18n="why1_title">Sin roaming costoso</h3>
+          <p data-i18n="why1_desc">Olvídate de las sorpresas en la factura. Precio fijo, datos exactos.</p>
+        </div>
+        <div class="ir-why-card">
+          <div class="ir-why-icon">📱</div>
+          <h3 data-i18n="why2_title">Mantén tu número</h3>
+          <p data-i18n="why2_desc">La eSIM va en la ranura secundaria. Tu número personal sigue activo.</p>
+        </div>
+        <div class="ir-why-card">
+          <div class="ir-why-icon">✅</div>
+          <h3 data-i18n="why3_title">100% digital</h3>
+          <p data-i18n="why3_desc">Sin SIM física, sin courier, sin visitar tiendas. Todo desde tu móvil.</p>
+        </div>
+        <div class="ir-why-card">
+          <div class="ir-why-icon">🎧</div>
+          <h3 data-i18n="why4_title">Soporte 24/7</h3>
+          <p data-i18n="why4_desc">Equipo disponible por WhatsApp para ayudarte cuando lo necesites.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="ir-section ir-section-dark" id="faq">
+    <div class="container">
+      <p class="ir-eyebrow" data-i18n="faq_tag">FAQ</p>
+      <h2 class="ir-title"><span data-i18n="faq_title">Preguntas</span> <strong data-i18n="faq_title_bold">frecuentes</strong></h2>
+      <div class="ir-faq-list">
+        <div class="ir-faq-item">
+          <button class="ir-faq-q" type="button">
+            <span data-i18n="faq_q1">¿Mi dispositivo es compatible con eSIM?</span>
+            <span class="ir-faq-icon">+</span>
+          </button>
+          <div class="ir-faq-a" data-i18n="faq_a1">La mayoría de iPhones (XS o posterior) y Android de gama media-alta (2020+) soportan eSIM. Verifica en Ajustes → General → Información → eSIM en iPhone.</div>
+        </div>
+        <div class="ir-faq-item">
+          <button class="ir-faq-q" type="button">
+            <span data-i18n="faq_q2">¿Cuándo puedo activar mi eSIM?</span>
+            <span class="ir-faq-icon">+</span>
+          </button>
+          <div class="ir-faq-a" data-i18n="faq_a2">Puedes instalar la eSIM antes de viajar y activarla cuando llegues a tu destino. Los datos empiezan a contar desde la primera conexión.</div>
+        </div>
+        <div class="ir-faq-item">
+          <button class="ir-faq-q" type="button">
+            <span data-i18n="faq_q3">¿Puedo hacer llamadas con la eSIM?</span>
+            <span class="ir-faq-icon">+</span>
+          </button>
+          <div class="ir-faq-a" data-i18n="faq_a3">Los planes son de solo datos. Para llamadas puedes usar WhatsApp, FaceTime o cualquier app de VoIP con los datos de tu eSIM.</div>
+        </div>
+        <div class="ir-faq-item">
+          <button class="ir-faq-q" type="button">
+            <span data-i18n="faq_q4">¿Qué pasa si pierdo mi QR?</span>
+            <span class="ir-faq-icon">+</span>
+          </button>
+          <div class="ir-faq-a" data-i18n="faq_a4">Puedes recuperar tu QR en cualquier momento desde <a href="my-esim.html" style="color:var(--ir-cyan)">my-esim.html</a> con tu ID de transacción o por WhatsApp.</div>
+        </div>
+        <div class="ir-faq-item">
+          <button class="ir-faq-q" type="button">
+            <span data-i18n="faq_q5">¿Los pagos son seguros?</span>
+            <span class="ir-faq-icon">+</span>
+          </button>
+          <div class="ir-faq-a" data-i18n="faq_a5">Todos los pagos se procesan mediante PayPal con encriptación de extremo a extremo. No almacenamos datos de tarjetas.</div>
+        </div>
+        <div class="ir-faq-item">
+          <button class="ir-faq-q" type="button">
+            <span data-i18n="faq_q6">¿Puedo pedir un reembolso si algo falla?</span>
+            <span class="ir-faq-icon">+</span>
+          </button>
+          <div class="ir-faq-a" data-i18n="faq_a6">Sí. Si tu eSIM no logra activarse por un problema técnico de nuestro proveedor, o tu dispositivo resulta incompatible y no llegaste a usarla, te reembolsamos el 100%. Escríbenos por WhatsApp dentro de las 48 horas siguientes a tu compra.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="ir-footer">
+    <div class="ir-footer-inner">
+      <div class="ir-footer-top">
+        <div class="ir-footer-brand">
+          <a href="index.html" class="ir-logo"></a>
+          <p data-i18n="footer_tagline">Conectividad global sin complicaciones.</p>
+          <div class="ir-footer-social">
+            <a href="https://www.instagram.com/infinityroam/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg>
+            </a>
+            <a href="https://www.tiktok.com/@infinityroam" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M16.5 2c.3 2.1 1.6 3.6 3.7 3.9v2.9c-1.3.1-2.6-.3-3.7-1v6.6c0 3-2.4 5.4-5.4 5.4S5.7 16.4 5.7 13.4c0-2.9 2.2-5.2 5-5.4v2.9c-1.2.2-2.1 1.2-2.1 2.5 0 1.4 1.1 2.5 2.5 2.5s2.6-1.1 2.6-2.5V2h2.8z" fill="currentColor"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="ir-footer-cols">
+          <div class="ir-footer-col">
+            <h4 data-i18n="footer_store">Tienda</h4>
+            <a href="catalog.html" data-i18n="footer_all_plans">Todos los planes</a>
+            <a href="#planes" data-i18n="footer_popular">Más populares</a>
+            <a href="recharge.html" data-i18n="footer_topup">Envía saldo →</a>
+            <a href="my-esim.html">Recuperar QR</a>
+          </div>
+          <div class="ir-footer-col">
+            <h4 data-i18n="footer_help">Ayuda</h4>
+            <a href="#faq">FAQ</a>
+            <a href="#como-funciona" data-i18n="nav_how">Cómo funciona</a>
+            <a href="compatibility.html">Compatibilidad</a>
+          </div>
+          <div class="ir-footer-col">
+            <h4 data-i18n="footer_company">Infinity Roam</h4>
+            <a href="referral-signup.html" data-i18n="footer_referral">Gana con referidos</a>
+          </div>
+        </div>
+      </div>
+      <div class="ir-footer-bottom">
+        <p data-i18n="footer_rights">© 2026 Infinity Roam. Todos los derechos reservados.</p>
+        <p data-i18n="footer_powered">Conexión eSIM segura · Pagos seguros por PayPal</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="countries.js"></script>
+  <script src="i18n.js"></script>
+  <script src="zendit.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // FAQ — enganchado con addEventListener (no onclick inline) para que
+    // no dependa de que el navegador ejecute atributos HTML embebidos,
+    // que algunas extensiones/optimizadores de HTML pueden bloquear o
+    // eliminar durante el build.
+    document.querySelectorAll(".ir-faq-q").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = btn.closest(".ir-faq-item");
+        if (!item) { console.warn("[FAQ] No se encontró .ir-faq-item padre"); return; }
+        const isOpening = !item.classList.contains("open");
+        item.classList.toggle("open");
+        console.log("[FAQ] click detectado, abriendo:", isOpening);
+        if (isOpening && typeof gtag === "function") {
+          const question = btn.querySelector("span")?.textContent?.trim() || "";
+          gtag("event", "faq_open", { faq_question: question });
+          window.debugAnalytics && window.debugAnalytics("GA4", "faq_open", { question });
+        }
+      });
+    });
+    // El toggle de idioma (#lang-toggle / #lang-toggle-mobile) ya está
+    // manejado globalmente por i18n.js (su propio DOMContentLoaded).
+    // Antes había aquí una segunda wiring redundante que, al dispararse
+    // ambos listeners en el mismo click, cada uno alternaba "al opuesto
+    // del idioma actual" — el segundo revertía lo que acababa de hacer
+    // el primero en el mismo evento, y el idioma nunca cambiaba visualmente.
+    // Menú hamburguesa (móvil)
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.querySelector(".ir-nav-links");
+    if (hamburger && navLinks) {
+      hamburger.addEventListener("click", () => {
+        navLinks.classList.toggle("open");
+        hamburger.classList.toggle("open");
+      });
+      // Cerrar el menú al tocar un enlace (anclas de la misma página)
+      navLinks.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => {
+          navLinks.classList.remove("open");
+          hamburger.classList.remove("open");
+        });
+      });
+    }
+    window.addEventListener("ir_lang_changed", () => loadFeaturedPlans());
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+    }
+  </script>
+
+  <!-- ============================================================
+       ASESOR DE VIAJE — modal, oculto por defecto (ver advisor.js)
+       ============================================================ -->
+  <div id="advisor-overlay" class="advisor-overlay" style="display:none">
+    <div class="advisor-modal">
+      <button type="button" id="advisor-close" class="advisor-close" aria-label="Cerrar">✕</button>
+
+      <!-- Progreso -->
+      <div class="advisor-progress">
+        <div class="advisor-progress-bar" id="advisor-progress-bar"></div>
+      </div>
+
+      <!-- Paso 1: Destino -->
+      <div class="advisor-step" id="advisor-step-1">
+        <p class="advisor-step-label" data-i18n="advisor_step1_label">Paso 1 de 3</p>
+        <h3 class="advisor-step-title" data-i18n="advisor_step1_title">¿A dónde viajas?</h3>
+        <div class="advisor-search-wrap" id="advisor-search-wrap">
+          <input type="text" id="advisor-destination-input" class="advisor-input" placeholder="Ej. España, Japón, USA..." data-i18n-placeholder="advisor_destination_placeholder" autocomplete="off" />
+          <div class="advisor-suggestions" id="advisor-suggestions"></div>
+        </div>
+      </div>
+
+      <!-- Paso 2: Días -->
+      <div class="advisor-step" id="advisor-step-2" style="display:none">
+        <p class="advisor-step-label" data-i18n="advisor_step2_label">Paso 2 de 3</p>
+        <h3 class="advisor-step-title" data-i18n="advisor_step2_title">¿Cuántos días estarás de viaje?</h3>
+        <div class="advisor-days-grid" id="advisor-days-grid">
+          <button type="button" class="advisor-option" data-days="3" data-i18n="advisor_days_3">1-3 días</button>
+          <button type="button" class="advisor-option" data-days="7" data-i18n="advisor_days_7">4-7 días</button>
+          <button type="button" class="advisor-option" data-days="14" data-i18n="advisor_days_14">8-14 días</button>
+          <button type="button" class="advisor-option" data-days="30" data-i18n="advisor_days_30">15-30 días</button>
+          <button type="button" class="advisor-option" data-days="45" data-i18n="advisor_days_45">Más de 30 días</button>
+        </div>
+      </div>
+
+      <!-- Paso 3: Actividades -->
+      <div class="advisor-step" id="advisor-step-3" style="display:none">
+        <p class="advisor-step-label" data-i18n="advisor_step3_label">Paso 3 de 3</p>
+        <h3 class="advisor-step-title" data-i18n="advisor_step3_title">¿Qué harás más seguido? <span class="advisor-step-sub" data-i18n="advisor_step3_sub">Elige todas las que apliquen</span></h3>
+        <div class="advisor-activities" id="advisor-activities">
+          <label class="advisor-checkbox"><input type="checkbox" value="maps" /> <span data-i18n="advisor_act_maps">🗺️ Navegar con Maps / Waze</span></label>
+          <label class="advisor-checkbox"><input type="checkbox" value="social" /> <span data-i18n="advisor_act_social">📱 Redes sociales (ver y publicar)</span></label>
+          <label class="advisor-checkbox"><input type="checkbox" value="translate" /> <span data-i18n="advisor_act_translate">🌐 Traductor en vivo</span></label>
+          <label class="advisor-checkbox"><input type="checkbox" value="stream" /> <span data-i18n="advisor_act_stream">🎬 Streaming (video / música)</span></label>
+          <label class="advisor-checkbox"><input type="checkbox" value="work" /> <span data-i18n="advisor_act_work">💻 Trabajo remoto / videollamadas</span></label>
+        </div>
+        <button type="button" id="advisor-submit" class="advisor-submit-btn" data-i18n="advisor_submit_btn">Ver mi plan recomendado →</button>
+      </div>
+
+      <!-- Resultado -->
+      <div class="advisor-step" id="advisor-step-result" style="display:none">
+        <div id="advisor-loading" class="advisor-loading" data-i18n="advisor_loading">Buscando el mejor plan para ti...</div>
+        <div id="advisor-result-content" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="logo.js"></script>
+  <script src="whatsapp.js"></script>
+  <script src="recover-qr.js"></script>
+  <script src="advisor.js"></script>
+  <script>
+    // ============================================================
+    // BUSCADOR DE DESTINO EN EL HERO
+    // Reutiliza COUNTRY_ES / COUNTRY_CODE / COUNTRY_FLAG de countries.js
+    // (ya cargado en esta página) — no se inventa una nueva fuente de datos.
+    // Al elegir/enviar, redirige a catalog.html?search=<país>, el mismo
+    // parámetro que catalog.js ya sabe leer (ver DOMContentLoaded en catalog.js).
+    // ============================================================
+    (function () {
+      const form = document.getElementById("hero-search-form");
+      const input = document.getElementById("hero-search-input");
+      const wrap = document.getElementById("hero-search-wrap");
+      const suggestBox = document.getElementById("hero-search-suggestions");
+      if (!form || !input || !suggestBox) return;
+
+      function getLang() {
+        return (typeof window.getLang === "function") ? window.getLang() : (localStorage.getItem("ir_lang") || "es");
+      }
+
+      function buildCountryList() {
+        if (typeof COUNTRY_ES === "undefined") return [];
+        return Object.keys(COUNTRY_ES).map((en) => ({ en, es: COUNTRY_ES[en] }));
+      }
+
+      function flagFor(enName) {
+        if (typeof COUNTRY_CODE === "undefined" || typeof COUNTRY_FLAG === "undefined") return "🌍";
+        const code = Object.keys(COUNTRY_CODE).find((k) => COUNTRY_CODE[k] === enName);
+        return (code && COUNTRY_FLAG[code]) || "🌍";
+      }
+
+      const SEARCH_ALIASES = {
+        "usa": "United States", "estados unidos": "United States",
+        "uk": "United Kingdom", "reino unido": "United Kingdom",
+        "corea": "South Korea", "corea del sur": "South Korea",
+        "emiratos": "United Arab Emirates", "uae": "United Arab Emirates",
+      };
+
+      let activeIndex = -1;
+
+      function renderSuggestions(query) {
+        const lang = getLang();
+        const all = buildCountryList();
+        const q = query.trim().toLowerCase();
+        const aliasTarget = SEARCH_ALIASES[q];
+
+        const matches = q
+          ? all.filter((c) =>
+              c.en.toLowerCase().includes(q) ||
+              c.es.toLowerCase().includes(q) ||
+              (aliasTarget && c.en === aliasTarget)
+            ).slice(0, 8)
+          : all.slice(0, 8);
+
+        activeIndex = -1;
+
+        if (!matches.length) {
+          suggestBox.classList.remove("open");
+          suggestBox.innerHTML = "";
+          return;
+        }
+
+        suggestBox.innerHTML = matches.map((c) => {
+          const display = lang === "es" ? c.es : c.en;
+          return `<div class="ir-suggestion-item" data-en="${c.en}" data-display="${display}">
+            <span class="ir-suggestion-flag">${flagFor(c.en)}</span><span>${display}</span>
+          </div>`;
+        }).join("");
+
+        suggestBox.querySelectorAll(".ir-suggestion-item").forEach((item) => {
+          item.addEventListener("click", () => selectCountry(item.dataset.en, item.dataset.display));
+        });
+
+        suggestBox.classList.add("open");
+      }
+
+      function selectCountry(enName, display) {
+        input.value = display;
+        suggestBox.classList.remove("open");
+        goToCatalog(enName);
+      }
+
+      function goToCatalog(query) {
+        const term = (query || input.value || "").trim();
+        if (typeof gtag === "function") {
+          gtag("event", "search_destination", { search_term: term, source: "hero" });
+        }
+        window.location.href = "catalog.html?search=" + encodeURIComponent(term);
+      }
+
+      input.addEventListener("focus", () => renderSuggestions(input.value));
+      input.addEventListener("input", () => renderSuggestions(input.value));
+
+      input.addEventListener("keydown", (e) => {
+        const items = suggestBox.querySelectorAll(".ir-suggestion-item");
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          activeIndex = Math.min(activeIndex + 1, items.length - 1);
+          items.forEach((it, i) => it.classList.toggle("active", i === activeIndex));
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          activeIndex = Math.max(activeIndex - 1, 0);
+          items.forEach((it, i) => it.classList.toggle("active", i === activeIndex));
+        } else if (e.key === "Enter" && activeIndex >= 0 && items[activeIndex]) {
+          e.preventDefault();
+          const it = items[activeIndex];
+          selectCountry(it.dataset.en, it.dataset.display);
+        }
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        goToCatalog();
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!wrap.contains(e.target)) suggestBox.classList.remove("open");
+      });
+    })();
+  </script>
+</body>
+</html>

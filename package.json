@@ -1,0 +1,8 @@
+{
+  "name": "infinity-roam",
+  "version": "1.0.0",
+  "description": "Infinity Roam eSIM Store",
+  "dependencies": {
+    "nodemailer": "^6.9.13"
+  }
+}

@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /catalog.html
+Allow: /sitemap.xml
+
+# Private pages — no index
+Disallow: /admin-ir.html
+Disallow: /dashboard.html
+Disallow: /referral-signup.html
+Disallow: /mi-credito.html
+Disallow: /test-email.html
+Disallow: /netlify/
+
+Sitemap: https://infinity-roam.com/sitemap.xml

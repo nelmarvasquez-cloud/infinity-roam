@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QWNLSCXJ9P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QWNLSCXJ9P');
+  </script>
+  <script src="/utm.js"></script>
+  <title>Tu eSIM está lista — Infinity Roam</title>
+  <meta name="description" content="Confirmación de compra. Descarga tu código QR y sigue las instrucciones para activar tu eSIM de Infinity Roam en minutos." />
+  <link rel="canonical" href="https://infinity-roam.com/confirmation.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Tu eSIM está lista — Infinity Roam" />
+  <meta property="og:description" content="Descarga tu código QR y activa tu eSIM en minutos." />
+  <meta property="og:url" content="https://infinity-roam.com/confirmation.html" />
+  <meta property="og:image" content="https://infinity-roam.com/icons/icon-512.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Tu eSIM está lista — Infinity Roam" />
+  <meta name="twitter:description" content="Descarga tu código QR y activa tu eSIM en minutos." />
+  <meta name="twitter:image" content="https://infinity-roam.com/icons/icon-512.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Infinity Roam" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
+</head>
+<body class="confirmation-page">
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo ir-logo"></a>
+      <div class="nav-links">
+        <button id="lang-toggle" class="lang-toggle">EN</button>
+      </div>
+      <div class="nav-right-mobile">
+        <button id="lang-toggle-mobile" class="lang-toggle">EN</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="confirmation-section">
+    <div class="container">
+      <div id="confirmation-loading" class="loading-state">
+        <div class="spinner"></div>
+        <p data-i18n="conf_loading">Generando tu eSIM...</p>
+      </div>
+      <div id="confirmation-content" style="display:none" class="confirmation-content">
+        <div class="success-icon">
+          <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+            <circle cx="28" cy="28" r="28" fill="#f5f5f7"/>
+            <circle cx="28" cy="28" r="20" fill="#e8e8ed"/>
+            <path d="M18 28l7 7 13-13" stroke="#16223f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 data-i18n="conf_title">¡Tu eSIM está lista! 🎉</h1>
+        <p class="confirmation-sub"><span data-i18n="conf_sub">Te enviamos el QR a</span> <strong id="conf-email"></strong></p>
+        <div class="qr-card">
+          <div class="qr-card-header">
+            <div>
+              <h3 id="conf-plan-name">Plan eSIM</h3>
+              <p id="conf-plan-detail"></p>
+            </div>
+            <div class="conf-transaction">
+              <span data-i18n="conf_id_label">ID: </span><code id="conf-tx-id"></code>
+            </div>
+          </div>
+          <div class="qr-display">
+            <div id="qr-loading" class="qr-loading">
+              <div class="spinner"></div>
+              <p data-i18n="conf_qr_generating">Generando QR...</p>
+            </div>
+            <img id="qr-image" src="" alt="QR Code" style="display:none" />
+            <div id="qr-error" style="display:none" class="qr-error">
+              <p data-i18n="conf_qr_error">No se pudo cargar el QR. Revisa tu email.</p>
+            </div>
+          </div>
+          <!-- Se usa en vez de .qr-display cuando la compra es de más de 1 eSIM -->
+          <div id="qr-multi-display" style="display:none"></div>
+          <div class="qr-instructions">
+            <h4 data-i18n="conf_instructions_title">¿Cómo activar tu eSIM?</h4>
+            <div class="instructions-tabs">
+              <button class="tab-btn active" data-tab="ios" data-i18n="conf_tab_ios">iPhone (iOS)</button>
+              <button class="tab-btn" data-tab="android" data-i18n="conf_tab_android">Android</button>
+            </div>
+            <div class="tab-content active" id="tab-ios">
+              <ol id="ios-steps"></ol>
+            </div>
+            <div class="tab-content" id="tab-android">
+              <ol id="android-steps"></ol>
+            </div>
+          </div>
+        </div>
+        <div class="confirmation-actions">
+          <button class="btn-ghost" id="download-qr-btn" data-i18n="conf_download">⬇️ Descargar QR</button>
+          <a href="catalog.html" class="btn-primary" data-i18n="conf_buy_more">Comprar otro plan →</a>
+        </div>
+        <div class="support-note">
+          <span data-i18n="conf_support">¿Problemas? Escríbenos a</span>
+          <a href="mailto:soporte@infinity-roam.com">soporte@infinity-roam.com</a>
+        </div>
+        <div class="referral-promo">
+          <span class="referral-promo-emoji">🎁</span>
+          <div>
+            <p class="referral-promo-title" data-i18n="conf_referral_title">¿Viajas seguido o tienes amigos viajeros?</p>
+            <p class="referral-promo-desc" data-i18n="conf_referral_desc">Comparte tu código y gana crédito por cada compra que hagan.</p>
+          </div>
+          <a href="referral-signup.html" class="referral-promo-btn" data-i18n="conf_referral_cta">Unirme →</a>
+        </div>
+      </div>
+      <div id="confirmation-error" style="display:none" class="error-state">
+        <div class="error-icon">❌</div>
+        <h2>Error</h2>
+        <p id="conf-error-msg" data-i18n="conf_no_order"></p>
+        <a href="catalog.html" class="btn-primary" data-i18n="nav_plans">Ver planes</a>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="zendit.js"></script>
+  <script src="confirmation.js"></script>
+  <script>
+    // Render installation steps from translations
+    function renderSteps() {
+      const iosSteps = t("conf_ios_steps");
+      const androidSteps = t("conf_android_steps");
+      const iosList = document.getElementById("ios-steps");
+      const androidList = document.getElementById("android-steps");
+      if (iosList && Array.isArray(iosSteps)) {
+        iosList.innerHTML = iosSteps.map(s => `<li>${s}</li>`).join("");
+      }
+      if (androidList && Array.isArray(androidSteps)) {
+        androidList.innerHTML = androidSteps.map(s => `<li>${s}</li>`).join("");
+      }
+    }
+    document.addEventListener("DOMContentLoaded", renderSteps);
+
+    const originalApply = applyTranslations;
+    window.applyTranslations = function() {
+      originalApply();
+      renderSteps();
+    };
+
+    // El toggle de idioma ya está manejado globalmente por i18n.js — ver
+    // la nota en index.html sobre por qué esta wiring duplicada rompía
+    // el cambio de idioma (ambos listeners se revertían entre sí).
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+    }
+  </script>
+  <script src="logo.js"></script>
+  <script src="whatsapp.js"></script>
+  <script src="recover-qr.js"></script>
+</body>
+</html>

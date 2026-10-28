@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="topup_conf_title">Envío en camino — Infinity Roam</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
+  <style>
+    body{background:#f5f7fc;}
+    .tc-wrap{max-width:480px;margin:0 auto;padding:120px 20px 60px;text-align:center;}
+    .tc-icon{font-size:3.4rem;margin-bottom:16px;}
+    .tc-card{background:#fff;border-radius:20px;padding:32px 28px;box-shadow:0 12px 32px rgba(15,27,61,0.08);text-align:left;margin-top:24px;}
+    .tc-row{display:flex;justify-content:space-between;padding:9px 0;font-size:0.9rem;color:#475569;border-bottom:1px solid rgba(15,27,61,0.06);}
+    .tc-row strong{color:#0f1b3d;}
+    .tc-note{font-size:0.85rem;color:#64748b;margin-top:18px;line-height:1.5;}
+    .tc-btn{display:inline-block;margin-top:24px;background:#2864E6;color:#fff;text-decoration:none;padding:13px 28px;border-radius:99px;font-weight:700;font-size:0.9rem;}
+  </style>
+</head>
+<body>
+  <div class="tc-wrap">
+    <div class="tc-icon">📲</div>
+    <h1 style="color:#0f1b3d;font-size:1.6rem;font-weight:800" data-i18n="topup_conf_heading">¡Tu envío está en camino!</h1>
+    <p style="color:#64748b;font-size:0.95rem;margin-top:8px" data-i18n="topup_conf_sub">Te confirmaremos por correo en cuanto la recarga se complete — normalmente toma solo unos segundos.</p>
+
+    <div class="tc-card" id="tc-card"></div>
+
+    <p class="tc-note" data-i18n="topup_conf_note">Si no ves el correo en unos minutos, revisa spam o escríbenos por WhatsApp con tu ID de transacción.</p>
+    <a href="recharge.html" class="tc-btn" data-i18n="topup_conf_another">Enviar otra recarga →</a>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="topup-confirmation.js"></script>
+</body>
+</html>

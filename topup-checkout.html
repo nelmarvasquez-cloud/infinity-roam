@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="topup_checkout_title">Pago — Envío de saldo — Infinity Roam</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
+  <style>
+    body{background:#f5f7fc;}
+    .topup-co-wrap{max-width:480px;margin:0 auto;padding:120px 20px 60px;}
+    .topup-co-card{background:#fff;border:1px solid rgba(15,27,61,0.08);border-radius:20px;padding:28px;box-shadow:0 12px 32px rgba(15,27,61,0.08);}
+    .topup-co-row{display:flex;justify-content:space-between;padding:10px 0;font-size:0.92rem;color:#64748b;border-bottom:1px solid rgba(15,27,61,0.06);}
+    .topup-co-row strong{color:#0f1b3d;text-align:right;}
+    .topup-co-total{display:flex;justify-content:space-between;padding:16px 0 4px;font-size:1.15rem;font-weight:800;color:#0f1b3d;}
+    .topup-co-divider{text-align:center;color:#94a3b8;font-size:0.78rem;margin:20px 0 16px;position:relative;}
+    #topup-paypal-container{min-height:60px;}
+    .topup-co-error{background:#fee;border:1px solid #fcc;color:#c0392b;padding:12px 16px;border-radius:10px;font-size:0.85rem;margin-top:14px;display:none;}
+    .topup-co-processing{text-align:center;color:#64748b;padding:30px 0;display:none;}
+    .nav.ir-dark-nav{background:rgba(255,255,255,0.96)!important;border-bottom:1px solid rgba(15,27,61,0.06)!important;}
+    .nav.ir-dark-nav .lang-toggle{background:#e9eefd!important;color:#334155!important;border:none!important;}
+  </style>
+  <script>
+    (async function() {
+      try {
+        const r = await fetch("/.netlify/functions/get-config");
+        const js = await r.text();
+        eval(js);
+        const clientId = window.IR_RUNTIME_CONFIG?.PAYPAL_CLIENT_ID || "";
+        if (clientId) {
+          const s = document.createElement("script");
+          s.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
+          s.id = "paypal-sdk";
+          document.head.appendChild(s);
+        }
+      } catch(e) { console.error("[PayPal] Error cargando SDK:", e); }
+    })();
+  </script>
+</head>
+<body class="checkout-page">
+
+  <nav class="nav ir-dark-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo ir-logo"></a>
+      <div class="nav-links">
+        <button id="lang-toggle" class="lang-toggle">EN</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="topup-co-wrap">
+    <div class="topup-co-card">
+      <h2 style="color:#0f1b3d;font-size:1.3rem;margin-bottom:18px;font-weight:800" data-i18n="topup_checkout_summary">Resumen del envío</h2>
+
+      <div class="topup-co-row"><span data-i18n="topup_co_operator">Operadora</span><strong id="co-brand"></strong></div>
+      <div class="topup-co-row"><span data-i18n="topup_co_country">País</span><strong id="co-country"></strong></div>
+      <div class="topup-co-row"><span data-i18n="topup_co_recipient">Número destino</span><strong id="co-phone"></strong></div>
+      <div class="topup-co-total"><span data-i18n="checkout_total">Total</span><strong id="co-price"></strong></div>
+
+      <div class="topup-co-divider" data-i18n="checkout_payment_divider">Método de pago</div>
+      <div id="topup-paypal-container"></div>
+      <div class="topup-co-error" id="topup-co-error"></div>
+      <div class="topup-co-processing" id="topup-co-processing" data-i18n="topup_processing">Procesando tu envío de saldo...</div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="zendit.js"></script>
+  <script src="logo.js"></script>
+  <script src="topup-checkout.js"></script>
+</body>
+</html>

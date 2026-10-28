@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QWNLSCXJ9P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QWNLSCXJ9P');
+  </script>
+  <script src="/utm.js"></script>
+  <title>Planes eSIM para 190+ países — Infinity Roam</title>
+  <meta name="description" content="Explora más de 2,900 planes eSIM para 190+ países y regiones. Filtra por destino, activa por QR y conéctate en minutos sin roaming ni SIM física." />
+  <link rel="canonical" href="https://infinity-roam.com/catalog.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Planes eSIM para 190+ países — Infinity Roam" />
+  <meta property="og:description" content="Explora más de 2,900 planes eSIM para 190+ países y regiones. Activa por QR en minutos." />
+  <meta property="og:url" content="https://infinity-roam.com/catalog.html" />
+  <meta property="og:image" content="https://infinity-roam.com/icons/icon-512.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Planes eSIM para 190+ países — Infinity Roam" />
+  <meta name="twitter:description" content="Explora más de 2,900 planes eSIM para 190+ países y regiones." />
+  <meta name="twitter:image" content="https://infinity-roam.com/icons/icon-512.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#16223F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Infinity Roam" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
+  <style>
+    /* ── DARK THEME OVERRIDES ── */
+    :root{--ir-navy:#16223F;--ir-navy2:#223257;--ir-blue:#2864E6;--ir-cyan:#2864E6;}
+    body{background:var(--ir-navy)!important;color:#fff!important;}
+
+    /* ── NAV idéntico al home ── */
+    .nav, .nav.scrolled {
+      background: rgba(10,10,10,0.92) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    }
+    .nav .logo-text, .nav .nav-logo span { color: #2864E6 !important; font-weight: 700 !important; }
+    .nav .logo-text strong { color: #C8C8C8 !important; font-weight: 400 !important; }
+    .nav .nav-links a { color: #B0B0B0 !important; }
+    .nav .nav-links a:hover { color: #ffffff !important; }
+    .nav .lang-toggle { background: rgba(255,255,255,0.1) !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.15) !important; }
+    .nav .nav-hamburger span { background: #ffffff !important; }
+
+    /* CATALOG HERO */
+    .catalog-hero{background:linear-gradient(135deg,#16223F 0%,#223257 60%,#16223F 100%)!important;padding:100px 20px 32px!important;text-align:center;}
+    .catalog-hero h1{color:#fff!important;font-size:clamp(2rem,5vw,3rem)!important;font-weight:800!important;}
+    .catalog-hero h1 strong{color:var(--ir-cyan)!important;}
+    .catalog-hero p{color:#B0B0B0!important;}
+    .compat-inline-link{display:inline-block;margin:10px 0 0;font-size:0.82rem;color:var(--ir-cyan);text-decoration:none;border-bottom:1px solid rgba(40,100,230,0.35);padding-bottom:1px;transition:color .2s,border-color .2s;}
+    .compat-inline-link:hover{color:#fff;border-color:#fff;}
+
+    /* REGION CHIPS */
+    .region-wrap{margin:20px 0 0;display:flex;flex-direction:column;align-items:center;gap:12px;}
+    .region-label{font-size:.7rem;color:var(--ir-cyan);letter-spacing:.1em;text-transform:uppercase;}
+    .region-chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+    .region-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(40,100,230,0.12);border:1.5px solid rgba(40,100,230,0.3);color:#fff;padding:10px 20px;border-radius:99px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;}
+    .region-chip:hover{background:rgba(40,100,230,0.2);}
+
+    /* SEARCH */
+    .catalog-filters{background:var(--ir-navy)!important;padding:24px 0!important;}
+    .search-box{background:rgba(255,255,255,0.07)!important;border:1.5px solid rgba(255,255,255,0.15)!important;border-radius:16px!important;}
+    .search-box:focus-within{border-color:rgba(40,100,230,0.5)!important;}
+    #search-input{color:#fff!important;font-family:'Outfit',sans-serif!important;}
+    #search-input::placeholder{color:rgba(255,255,255,0.35)!important;}
+    .filter-chip-unlimited{background:rgba(255,255,255,0.07)!important;border:1.5px solid rgba(255,255,255,0.15)!important;color:#B0B0B0!important;border-radius:99px!important;font-family:'Outfit',sans-serif!important;}
+    .filter-chip-unlimited.active{background:rgba(40,100,230,0.2)!important;border-color:var(--ir-cyan)!important;color:var(--ir-cyan)!important;}
+
+    /* SUGGESTION BOX */
+    #search-suggestions{background:#223257!important;border:1px solid rgba(40,100,230,0.25)!important;border-radius:14px!important;box-shadow:0 8px 32px rgba(0,0,0,.4)!important;}
+    .suggestion-item{color:#fff!important;}
+    .suggestion-item:hover{background:rgba(40,100,230,0.15)!important;}
+
+    /* GRID SECTION */
+    .catalog-grid-section{background:var(--ir-navy)!important;}
+
+    /* SKELETON DARK */
+    .skeleton-card{background:rgba(255,255,255,0.05)!important;border:1px solid rgba(255,255,255,0.08)!important;border-radius:16px!important;}
+    .skeleton-line,.skeleton-price,.skeleton-btn{background:rgba(255,255,255,0.08)!important;}
+
+    /* COUNTRY BROWSER — chips are decorative only, no click */
+    .browser-hint{color:#B0B0B0!important;}
+    .country-chip{background:rgba(255,255,255,0.05)!important;border:1px solid rgba(255,255,255,0.1)!important;color:#fff!important;border-radius:99px!important;cursor:default!important;pointer-events:none!important;}
+    .country-chip-count{display:none!important;}
+
+    /* PLAN CARDS */
+    .plan-card{background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:20px!important;color:#fff!important;}
+    .plan-card:hover{transform:translateY(-4px)!important;border-color:rgba(40,100,230,0.4)!important;background:rgba(40,100,230,0.1)!important;}
+    .plan-country-name{color:var(--ir-cyan)!important;font-weight:700!important;text-transform:uppercase!important;font-size:.78rem!important;letter-spacing:.1em!important;}
+    .highlight-value{color:#fff!important;font-weight:800!important;}
+    .highlight-label{color:#B0B0B0!important;font-size:.72rem!important;text-transform:uppercase!important;}
+    .plan-highlights{background:rgba(255,255,255,0.05)!important;border-radius:12px!important;}
+    .plan-feature{color:#B0B0B0!important;font-size:.82rem!important;}
+    .price-amount{color:#fff!important;font-size:2rem!important;font-weight:800!important;}
+    .price-label{color:#B0B0B0!important;}
+    .plan-footer{border-top:1px solid rgba(255,255,255,0.08)!important;}
+    .btn-buy{background:var(--ir-blue)!important;color:#ffffff!important;border-radius:12px!important;font-weight:700!important;border:none!important;}
+    .btn-buy:hover{background:#4A90E8!important;}
+    .plan-flag{font-size:1.8rem!important;}
+
+    /* FOOTER */
+    .apple-footer{background:#16223F!important;}
+    .footer-bottom p{color:rgba(255,255,255,0.3)!important;}
+  </style>
+</head>
+<body class="catalog-page">
+
+  <nav class="nav ir-dark-nav" id="main-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo ir-logo"></a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav_home">Inicio</a>
+        <a href="index.html#como-funciona" data-i18n="nav_how">Cómo funciona</a>
+        <a href="recharge.html" data-i18n="nav_topup">Recargas</a>
+        <a href="index.html#faq" data-i18n="nav_faq">FAQ</a>
+        <button id="lang-toggle" class="lang-toggle">EN</button>
+      </div>
+      <div class="nav-right-mobile">
+        <button id="lang-toggle-mobile" class="lang-toggle">EN</button>
+        <button class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="catalog-hero">
+    <div class="container">
+      <h1><span data-i18n="catalog_title">Todos los planes</span> <strong data-i18n="catalog_title_bold">eSIM</strong></h1>
+      <p data-i18n="catalog_sub">Encuentra el plan perfecto para tu destino</p>
+      <a href="compatibility.html" class="compat-inline-link" data-i18n="catalog_compat_link">📱 ¿No sabes si tu teléfono es compatible? Verifícalo aquí →</a>
+      <!-- REGION QUICK SEARCH -->
+      <div class="region-wrap">
+        <div class="region-label">🌍 Buscar por región</div>
+        <div class="region-chips" style="flex-wrap:wrap;gap:8px">
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px" onclick="regionQuickSearch('Europe')">🇪🇺 Europa</button>
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px" onclick="regionQuickSearch('Asia')">🌏 Asia</button>
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px" onclick="regionQuickSearch('Latin America')">🌎 Latinoamérica</button>
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px" onclick="regionQuickSearch('Central America')">🌎 Centroamérica</button>
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px" onclick="regionQuickSearch('Caribbean')">🏝️ Caribe</button>
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px" onclick="regionQuickSearch('Middle East')">🌍 Oriente Medio</button>
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px" onclick="regionQuickSearch('Africa')">🌍 África</button>
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px" onclick="regionQuickSearch('Oceania')">🌏 Oceanía</button>
+          <button class="region-chip" style="font-size:.82rem;padding:7px 14px;background:rgba(40,100,230,0.18);border-color:var(--ir-cyan)" onclick="regionQuickSearch('Global')">🌐 Global</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-filters">
+    <div class="container">
+      <div class="search-wrap">
+        <div class="search-box" id="search-box-wrap">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <circle cx="7.5" cy="7.5" r="5.5" stroke="#888" stroke-width="1.5"/>
+            <path d="M13 13l3 3" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input type="text" id="search-input"
+            data-i18n-placeholder="search_placeholder"
+            placeholder="¿A dónde viajas? Busca tu destino..."
+            autocomplete="off" />
+          <button id="clear-search" style="display:none;background:none;border:none;cursor:pointer;color:#888;font-size:1.1rem;padding:0 4px;">✕</button>
+        </div>
+        <div class="search-actions">
+          <button class="filter-chip-unlimited" id="unlimited-toggle">
+            ♾️ <span id="unlimited-label">Solo Ilimitados</span>
+          </button>
+          <span id="results-counter" style="display:none;font-size:0.78rem;color:var(--gray-400);"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-grid-section">
+    <div class="container">
+      <div id="catalog-loading" class="skeleton-grid">
+        <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line medium"></div><div class="skeleton-line long"></div><div class="skeleton-footer"><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line medium"></div><div class="skeleton-line long"></div><div class="skeleton-footer"><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line medium"></div><div class="skeleton-line long"></div><div class="skeleton-footer"><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line medium"></div><div class="skeleton-line long"></div><div class="skeleton-footer"><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line medium"></div><div class="skeleton-line long"></div><div class="skeleton-footer"><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line medium"></div><div class="skeleton-line long"></div><div class="skeleton-footer"><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+      </div>
+      <div id="catalog-error" class="error-state" style="display:none">
+        <div class="error-icon">⚠️</div>
+        <p id="error-msg" data-i18n="plan_error">Error cargando planes.</p>
+      </div>
+      <div id="country-browser" style="display:none">
+        <p class="browser-hint" id="browser-hint">🌍 Destinos populares</p>
+        <div id="country-chips" class="country-chips"></div>
+        <div class="plans-grid" id="popular-plans-grid" style="margin-top:20px"></div>
+      </div>
+      <div class="plans-grid" id="catalog-grid" style="display:none"></div>
+      <div id="no-results" style="display:none" class="no-results">
+        <p data-i18n="plan_no_results">No se encontraron planes.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="apple-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p data-i18n="footer_rights">© 2026 Infinity Roam. Todos los derechos reservados.</p>
+        <p data-i18n="footer_powered">Conexión eSIM segura · Pagos seguros por PayPal</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="countries.js"></script>
+  <script src="i18n.js"></script>
+  <script src="zendit.js"></script>
+  <script src="catalog.js"></script>
+  <script src="logo.js"></script>
+  <script>
+    // Region chip quick search — uses same mechanism as country chips in catalog.js
+    function regionQuickSearch(region) {
+      var input = document.getElementById('search-input');
+      if (!input) return;
+      // Set value and trigger catalog.js input handler exactly as if user typed
+      var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      nativeInputValueSetter.call(input, region);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    // El toggle de idioma ya está manejado globalmente por i18n.js — ver
+    // la nota en index.html sobre por qué esta wiring duplicada rompía
+    // el cambio de idioma (ambos listeners se revertían entre sí).
+    // Menú hamburguesa (móvil)
+    var hamburger = document.getElementById('hamburger');
+    var navLinksEl = document.querySelector('.nav-links');
+    if (hamburger && navLinksEl) {
+      hamburger.addEventListener('click', function() {
+        navLinksEl.classList.toggle('open');
+      });
+      navLinksEl.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() { navLinksEl.classList.remove('open'); });
+      });
+    }
+    if ('serviceWorker' in navigator)
+      window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js'); });
+  </script>
+  <script src="whatsapp.js"></script>
+  <script src="recover-qr.js"></script>
+</body>
+</html>

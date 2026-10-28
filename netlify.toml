@@ -1,0 +1,94 @@
+[build]
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Reintento automático del correo de eSIM cuando Zendit tarda en aprovisionar.
+# Corre cada 5 minutos. Ver netlify/functions/retry-pending-esims.js
+[functions."retry-pending-esims"]
+  schedule = "*/5 * * * *"
+
+[build.environment]
+  SECRETS_SCAN_OMIT_PATHS = "infinity-roam/zendit_tier2.json,infinity-roam/zendit_prices.json,infinity-roam/netlify/functions/offer_country.json,infinity-roam/netlify/functions/offer_region.json,zendit_tier2.json,zendit_prices.json,netlify/functions/offer_country.json,netlify/functions/offer_region.json"
+  SECRETS_SCAN_OMIT_KEYS = "EMAILJS_PRIVATE_KEY"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+
+[[headers]]
+  for = "/admin-ir.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/dashboard.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/referral-signup.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/mi-credito.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/test-email.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Content-Type = "application/xml; charset=UTF-8"
+
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=UTF-8"
+
+# Defensa adicional: ningún archivo .md debe ser servible públicamente,
+# aunque alguno vuelva a incluirse por error en un futuro deploy.
+# Motivo: ANALYTICS_README.md quedó expuesto públicamente (documentaba
+# arquitectura interna, nombres de variables de entorno y la existencia
+# de admin-ir.html) — se removió del deploy, y esta regla evita que
+# vuelva a pasar sin que nadie se dé cuenta.
+[[redirects]]
+  from = "/*.md"
+  to = "/"
+  status = 404
+  force = true
+# Deploy marker: 2026-08-18T14:48:38Z — forzado tras fix de exposición de ANALYTICS_README.md
+# Verificación final: 2026-08-18T15:06:22Z
+# Fix: referral-signup.html ahora traduce correctamente (2026-08-19T14:02:05Z)
+# Rediseño estética clara del home (hero/como-funciona/planes) — 2026-08-28T04:12:09Z
+# Nuevo servicio: Envío de saldo (Mobile Top-Up) — 2026-08-29T17:36:39Z
+# Fix: botón EN duplicado en nav + banner Envía saldo tras el hero — 2026-08-30T23:15:23Z
+# Fix: buscador de país con autocompletado en recharge.html + errores detallados de Zendit — 2026-08-31T05:05:38Z
+# Fix: getTopupPrice devuelve numero (no string) para las ofertas de recarga — 2026-08-31T22:25:06Z
+# Recharge: seleccion de operadora + precio con piso sugerido Zendit y comision PayPal — 2026-08-31T22:37:01Z
+# Precio de recarga simplificado: sugerido Zendit + comision PayPal, sin margen propio adicional — 2026-08-31T22:50:08Z
+# Fix: topup-checkout.html pasa a tema claro (consistente con recharge.html) para arreglar contraste del resumen — 2026-08-31T23:21:20Z
+# Fix: topup-checkout.html usa el logo real via logo.js en vez de un SVG improvisado — 2026-08-31T23:28:36Z
+# Actualizar mensaje predeterminado del boton flotante de WhatsApp — 2026-09-01T23:26:05Z
+# Logo real (infinito+globo+avion) via logo.js en todo el sitio + link Recargas en nav — 2026-09-06T01:59:13Z
+# Fix: quitar limite artificial de 8 paises en el buscador de recharge.html — 2026-09-07T00:10:18Z
+# Eliminado badge/advertencia de China en catalogo hasta confirmar enrutamiento con Zendit — 2026-09-10T00:57:35Z
+# Checkout esim: cupon promocional siempre visible tras Nombre (revertido toggle) — 2026-09-10T14:35:20Z
+# Catalogo: fix bug PUL/UL 0GB, ocultar duplicado IC de Espana, vista curada por defecto con Ver todos — 2026-09-18T00:00:19Z
+# Eliminadas todas las referencias visibles a Zendit (footer_powered) — 2026-09-18T01:04:47Z
+# Recargas: buscador de pais filtra por cobertura real de Zendit (topup_countries.json, generado con build-topup-countries.js) — oculta paises sin recarga como Portugal — 2026-09-29T02:54:55Z
+# Nuevo cupon de descuento plano 5% en eSIMs (no aplica a recargas)
+# Nuevo cupon de descuento plano 10% en eSIMs
+# Piso de precio en descuentos (cupones y referidos): nunca bajan de (costo+0.30)/(1-0.054), tarifa real PayPal 5.40%+0.30 — 2026-10-14T19:30:27Z
+# Cupones movidos al servidor (netlify/functions/coupon.js): ya no son visibles en el JavaScript publico — 2026-10-14T19:40:21Z
+# Seguridad: get-config ya no expone claves privadas al navegador — 2026-10-14T19:47:04Z
+# Release LIVE166 2026-10-14 precios eSIM actualizados y planes descontinuados eliminados
