@@ -143,6 +143,46 @@ function related(article, all, n = 4) {
 }
 
 // ── Plantillas ─────────────────────────────────────────────
+
+const TRANSLATE = `<div id="google_translate_element" style="display:none"></div>
+<script>
+(function () {
+  // Idioma: el que el visitante eligió en el sitio (ir_lang) o, si no eligió, el de su navegador.
+  // El HTML que ve Google siempre es inglés: la traducción ocurre solo en el navegador del visitante.
+  var lang = null;
+  try { lang = localStorage.getItem("ir_lang"); } catch (e) {}
+  if (lang !== "es" && lang !== "en") lang = (navigator.language || "en").toLowerCase().indexOf("es") === 0 ? "es" : "en";
+
+  function setCookie(v) {
+    var exp = v ? "" : ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = "googtrans=" + v + ";path=/" + exp;
+    document.cookie = "googtrans=" + v + ";path=/;domain=" + location.hostname + exp;
+  }
+  setCookie(lang === "es" ? "/en/es" : "");
+
+  var btn = document.getElementById("lang-switch");
+  if (btn) {
+    btn.textContent = lang === "es" ? "EN" : "ES";
+    btn.addEventListener("click", function () {
+      try { localStorage.setItem("ir_lang", lang === "es" ? "en" : "es"); } catch (e) {}
+      location.reload();
+    });
+  }
+
+  if (lang !== "es") return;
+  // Textos de la interfaz fijados a mano (la traducción automática dice "planos" en vez de "planes")
+  document.querySelectorAll("[data-es]").forEach(function (e) { e.textContent = e.getAttribute("data-es"); });
+  window.googleTranslateElementInit = function () {
+    new google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "es,en", autoDisplay: false }, "google_translate_element");
+  };
+  function load() {
+    var s = document.createElement("script");
+    s.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    document.head.appendChild(s);
+  }
+  if (document.readyState === "complete") load(); else window.addEventListener("load", load);
+})();
+</script>`;
 const GA = `<script async src="https://www.googletagmanager.com/gtag/js?id=G-QWNLSCXJ9P"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QWNLSCXJ9P');</script>
   <script src="/utm.js"></script>`;
@@ -181,6 +221,8 @@ const CSS = `:root{--navy:#16223F;--navy2:#223257;--blue:#2864E6;--gray:#B0B0B0;
     .cta{background:var(--navy2);border-radius:16px;padding:24px;margin:26px 0;text-align:center;}
     .cta h2{font-size:1.25rem;margin-bottom:8px;} .cta p{color:var(--gray);margin-bottom:14px;}
     .rel h2{font-size:1.2rem;margin:26px 0 12px;}
+    .lang-switch{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:6px 12px;font:700 .78rem "Outfit",sans-serif;cursor:pointer;}
+    .goog-te-banner-frame,.skiptranslate>iframe{display:none !important;} body{top:0 !important;}
     footer{background:#060e1a;padding:28px 20px;text-align:center;}
     footer p{color:rgba(255,255,255,0.3);font-size:.75rem;} footer a{color:var(--gray);text-decoration:none;}
     @media(max-width:600px){.card{flex-direction:column}.card img{width:100%;height:170px}article.post{padding:20px 16px}}`;
@@ -215,9 +257,10 @@ function layout({ title, description, canonical, ogImage, ogType, jsonLd, body, 
   <style>${CSS}</style>
 </head>
 <body>
-<nav class="nav"><a href="/" class="nav-logo">Infinity <span>Roam</span></a><a href="/catalog.html" class="nav-cta">View plans →</a></nav>
+<nav class="nav"><a href="/" class="nav-logo notranslate" translate="no">Infinity <span>Roam</span></a><span style="display:flex;gap:10px;align-items:center"><button id="lang-switch" class="lang-switch notranslate" translate="no" type="button" aria-label="Change language">ES</button><a href="/catalog.html" class="nav-cta notranslate" translate="no" data-es="Ver planes →">View plans →</a></span></nav>
 ${body}
 <footer><p>© 2026 Infinity Roam · <a href="/">Home</a> · <a href="/catalog.html">Plans</a> · <a href="/guias/">Guías</a> · <a href="/blog/">Blog</a></p></footer>
+${TRANSLATE}
 </body>
 </html>
 `;
@@ -258,8 +301,8 @@ function renderArticle(a, all) {
   ${a.image ? `<img class="hero-img" src="${esc(a.image)}" alt="${esc(a.title)}" width="800" height="380"/>` : ""}
   <div class="content">${content}</div>
 </article>
-<aside class="cta"><h2>Stay connected on your next trip</h2><p>Instant eSIM data plans for 190+ countries. No roaming fees, no physical SIM.</p><a class="nav-cta" href="/catalog.html">Browse eSIM plans →</a></aside>
-${rel.length ? `<section class="rel"><h2>Related articles</h2>${rel.map(card).join("")}</section>` : ""}
+<aside class="cta notranslate" translate="no"><h2 data-es="Conéctate en tu próximo viaje">Stay connected on your next trip</h2><p data-es="Planes eSIM con datos instantáneos para más de 190 países. Sin cargos de roaming ni SIM física.">Instant eSIM data plans for 190+ countries. No roaming fees, no physical SIM.</p><a class="nav-cta" href="/catalog.html" data-es="Ver planes eSIM →">Browse eSIM plans →</a></aside>
+${rel.length ? `<section class="rel"><h2 class="notranslate" translate="no" data-es="Artículos relacionados">Related articles</h2>${rel.map(card).join("")}</section>` : ""}
 </main>`;
   return layout({ title: `${a.title} | Infinity Roam`, description: desc, canonical: url, ogImage: a.image || SITE + "/icons/icon-512.png", ogType: "article", jsonLd: ld, body });
 }
