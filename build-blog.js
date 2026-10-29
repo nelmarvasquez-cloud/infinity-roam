@@ -170,6 +170,8 @@ const TRANSLATE = `<div id="google_translate_element" style="display:none"></div
   }
 
   if (lang !== "es") return;
+  // Textos de la interfaz fijados a mano (la traducción automática dice "planos" en vez de "planes")
+  document.querySelectorAll("[data-es]").forEach(function (e) { e.textContent = e.getAttribute("data-es"); });
   window.googleTranslateElementInit = function () {
     new google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "es,en", autoDisplay: false }, "google_translate_element");
   };
@@ -255,7 +257,7 @@ function layout({ title, description, canonical, ogImage, ogType, jsonLd, body, 
   <style>${CSS}</style>
 </head>
 <body>
-<nav class="nav"><a href="/" class="nav-logo notranslate" translate="no">Infinity <span>Roam</span></a><span style="display:flex;gap:10px;align-items:center"><button id="lang-switch" class="lang-switch notranslate" translate="no" type="button" aria-label="Change language">ES</button><a href="/catalog.html" class="nav-cta">View plans →</a></span></nav>
+<nav class="nav"><a href="/" class="nav-logo notranslate" translate="no">Infinity <span>Roam</span></a><span style="display:flex;gap:10px;align-items:center"><button id="lang-switch" class="lang-switch notranslate" translate="no" type="button" aria-label="Change language">ES</button><a href="/catalog.html" class="nav-cta notranslate" translate="no" data-es="Ver planes →">View plans →</a></span></nav>
 ${body}
 <footer><p>© 2026 Infinity Roam · <a href="/">Home</a> · <a href="/catalog.html">Plans</a> · <a href="/guias/">Guías</a> · <a href="/blog/">Blog</a></p></footer>
 ${TRANSLATE}
@@ -299,8 +301,8 @@ function renderArticle(a, all) {
   ${a.image ? `<img class="hero-img" src="${esc(a.image)}" alt="${esc(a.title)}" width="800" height="380"/>` : ""}
   <div class="content">${content}</div>
 </article>
-<aside class="cta"><h2>Stay connected on your next trip</h2><p>Instant eSIM data plans for 190+ countries. No roaming fees, no physical SIM.</p><a class="nav-cta" href="/catalog.html">Browse eSIM plans →</a></aside>
-${rel.length ? `<section class="rel"><h2>Related articles</h2>${rel.map(card).join("")}</section>` : ""}
+<aside class="cta notranslate" translate="no"><h2 data-es="Conéctate en tu próximo viaje">Stay connected on your next trip</h2><p data-es="Planes eSIM con datos instantáneos para más de 190 países. Sin cargos de roaming ni SIM física.">Instant eSIM data plans for 190+ countries. No roaming fees, no physical SIM.</p><a class="nav-cta" href="/catalog.html" data-es="Ver planes eSIM →">Browse eSIM plans →</a></aside>
+${rel.length ? `<section class="rel"><h2 class="notranslate" translate="no" data-es="Artículos relacionados">Related articles</h2>${rel.map(card).join("")}</section>` : ""}
 </main>`;
   return layout({ title: `${a.title} | Infinity Roam`, description: desc, canonical: url, ogImage: a.image || SITE + "/icons/icon-512.png", ogType: "article", jsonLd: ld, body });
 }
