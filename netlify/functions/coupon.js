@@ -26,6 +26,8 @@
 //  cupón se rechaza — nunca se aplica "por si acaso".
 // ============================================================
 
+const { corsHeaders, originAllowed, requestOrigin, rateLimited, clientIp: ipOf } = require("./lib/security");
+
 const GEO_COUPONS = {
   // Precio = breakeven + 50% del profit del precio sugerido Zendit
   "INFINITYDEAL": {
@@ -61,29 +63,41 @@ const GEO_COUPONS = {
   },
 };
 
-const headers = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+const baseHeaders = {
   "Content-Type": "application/json",
+  "Cache-Control": "no-store",
 };
 
 exports.handler = async function (event, context) {
+  const headers = { ...baseHeaders, ...corsHeaders(event) };
   if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
   }
 
-  let code, debug;
+  // Solo desde nuestro sitio (y Deploy Previews)
+  if (!originAllowed(requestOrigin(event))) {
+    return { statusCode: 403, headers, body: JSON.stringify({ valid: false, reason: "forbidden" }) };
+  }
+
+  // Anti fuerza bruta: nadie debería poder probar códigos en serie.
+  // 8 intentos por minuto y 40 por hora por IP (en memoria, por instancia).
+  const ip = ipOf(event);
+  if (rateLimited("coupon-min:" + ip, 8, 60 * 1000) || rateLimited("coupon-hour:" + ip, 40, 60 * 60 * 1000)) {
+    return { statusCode: 429, headers, body: JSON.stringify({ valid: false, reason: "rate_limited", message: "Demasiados intentos. Espera un minuto e inténtalo de nuevo." }) };
+  }
+
+  let code;
+  const debug = false; // el modo de diagnóstico por parámetro ya no existe (filtraba datos internos)
   try {
-    ({ code, debug } = JSON.parse(event.body || "{}"));
+    ({ code } = JSON.parse(event.body || "{}"));
   } catch (e) {
     return { statusCode: 400, headers, body: JSON.stringify({ valid: false, reason: "Solicitud inválida" }) };
   }
 
   const diag = {}; // diagnóstico crudo — solo se devuelve si debug=true
 
-  const cleanCode = (code || "").toUpperCase().trim();
+  const cleanCode = String(code || "").toUpperCase().trim().slice(0, 40);
   const coupon = GEO_COUPONS[cleanCode];
 
   if (!coupon) {

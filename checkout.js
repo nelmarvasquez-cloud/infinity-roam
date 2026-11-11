@@ -315,6 +315,7 @@ async function applyCode() {
         expired: "Este código ya no está disponible (fuera de su período de vigencia).",
         wrong_country: "Este código solo está disponible para compras desde Panamá.",
         country_undetectable: gdata.message || "No se pudo verificar tu ubicación. Intenta de nuevo.",
+        rate_limited: gdata.message || "Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
       };
       errorEl.textContent = messages[gdata.reason] || "Código no disponible.";
       errorEl.style.display = "block";
