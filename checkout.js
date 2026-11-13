@@ -133,121 +133,16 @@ let appliedReferral = null; // { code, referrer_name, discount }
 let finalPrice = planPrice;
 
 // ============================================================
-//  CUPONES INTERNOS (no acumulables con código de referido)
+//  CUPONES Y REFERIDOS — el precio con descuento lo calcula el SERVIDOR
 // ============================================================
-// Los cupones ya NO están aquí: checkout.js es público y cualquiera puede
-// leerlo. Se validan en el servidor (netlify/functions/coupon.js).
-const COUPONS = {};
-
-// Mapa de costos Tier 2 — se carga desde zendit_tier2.json
-let TIER2_COST_MAP = null;
-// Mapa de precios sugeridos Zendit — se carga desde zendit_prices.json
-let SUGGESTED_PRICE_MAP = null;
-
-async function loadTier2Costs() {
-  try {
-    const [r1, r2] = await Promise.all([
-      fetch('/zendit_tier2.json'),
-      fetch('/zendit_prices.json'),
-    ]);
-    TIER2_COST_MAP = await r1.json();
-    SUGGESTED_PRICE_MAP = await r2.json();
-    console.log(`[Tier2] ${Object.keys(TIER2_COST_MAP).length} costos cargados`);
-    console.log(`[Prices] ${Object.keys(SUGGESTED_PRICE_MAP).length} precios sugeridos cargados`);
-  } catch(e) {
-    console.warn('[Tier2] No se pudo cargar costos Tier 2:', e.message);
-  }
-}
-
-loadTier2Costs();
-
-// ── PISO DE PRECIO: ningún descuento puede dejar el precio por debajo de
-// lo que realmente cuesta vender el plan. Tarifa real de PayPal del
-// negocio: 5.40% + $0.30 por transacción. Precio mínimo seguro =
-// (costo Zendit Tier 2 + 0.30) / (1 − 0.054), redondeado hacia arriba al
-// centavo. Se aplica a TODOS los descuentos (cupones y referidos) y nunca
-// sube el precio por encima del precio de lista. Si no se conoce el costo
-// del plan (mapa Tier 2 no cargó), no se da descuento: es lo único seguro.
-const PAYPAL_REAL_PCT = 0.054;
-const PAYPAL_REAL_FIXED = 0.30;
-
-function minSafePrice(offerId) {
-  if (TIER2_COST_MAP && offerId && TIER2_COST_MAP[offerId] != null) {
-    const raw = TIER2_COST_MAP[offerId];
-    const cost = Array.isArray(raw) ? raw[0] : raw;
-    return Math.ceil(((cost + PAYPAL_REAL_FIXED) / (1 - PAYPAL_REAL_PCT)) * 100) / 100;
-  }
-  return null;
-}
-
-function applyPriceFloor(originalPrice, discountedPrice, offerId) {
-  const floor = minSafePrice(offerId);
-  if (floor === null) return originalPrice; // costo desconocido → sin descuento
-  return Math.min(originalPrice, Math.max(discountedPrice, floor));
-}
-
-// Calcular precio con cupón (con piso de seguridad)
-function calculateCouponPrice(originalPrice, coupon, offerId) {
-  if (!coupon) return originalPrice;
-  return applyPriceFloor(originalPrice, calculateCouponPriceRaw(originalPrice, coupon, offerId), offerId);
-}
-
-function calculateCouponPriceRaw(originalPrice, coupon, offerId) {
-  if (!coupon) return originalPrice;
-
-  if (coupon.type === "breakeven_tier2") {
-    // Usar costo Tier 2 real si está disponible
-    let realCost = null;
-    if (TIER2_COST_MAP && offerId && TIER2_COST_MAP[offerId]) {
-      realCost = TIER2_COST_MAP[offerId];
-    }
-    // Fallback: estimar costo desde precio con markup
-    if (!realCost) {
-      realCost = originalPrice / CONFIG.MARKUP;
-    }
-    // Precio mínimo = costo / (1 - comisión PayPal)
-    const breakeven = realCost / (1 - coupon.paypalFee);
-    return Math.ceil(breakeven * 100) / 100;
-  }
-
-  if (coupon.type === "pioneer_tier2") {
-    // Precio Pioneer = breakeven + 50% del profit del precio sugerido Zendit
-    // Fórmula: breakeven + profitShare × (PrecioSugerido × (1-PayPal) − CostoT2)
-    let realCost = null;
-    if (TIER2_COST_MAP && offerId && TIER2_COST_MAP[offerId]) {
-      realCost = TIER2_COST_MAP[offerId];
-    }
-    if (!realCost) realCost = originalPrice / CONFIG.MARKUP;
-
-    const fee = coupon.paypalFee;
-    const share = coupon.profitShare;
-    const breakeven = realCost / (1 - fee);
-
-    // Profit que generaría el precio sugerido tras PayPal
-    let suggestedPrice = null;
-    if (SUGGESTED_PRICE_MAP && offerId && SUGGESTED_PRICE_MAP[offerId]) {
-      suggestedPrice = SUGGESTED_PRICE_MAP[offerId];
-    }
-    // Fallback: si no hay precio sugerido, usar nuestro precio original como referencia
-    if (!suggestedPrice) suggestedPrice = originalPrice;
-
-    const profitSuggested = suggestedPrice * (1 - fee) - realCost;
-    const pioneer = breakeven + share * Math.max(profitSuggested, 0);
-    // Pioneer nunca puede ser mayor que el precio regular ni menor que breakeven
-    return Math.min(Math.ceil(pioneer * 100) / 100, originalPrice);
-  }
-  if (coupon.type === "breakeven") {
-    const estimatedCost = originalPrice / CONFIG.MARKUP;
-    const breakeven = estimatedCost / (1 - coupon.paypalFee);
-    return Math.ceil(breakeven * 100) / 100;
-  }
-  if (coupon.type === "percent") {
-    return originalPrice * (1 - coupon.discount / 100);
-  }
-  if (coupon.type === "fixed") {
-    return Math.max(0, originalPrice - coupon.discount);
-  }
-  return originalPrice;
+// checkout.js es público: aquí no hay códigos, ni costos de los planes, ni
+// fórmulas de descuento. El navegador envía (offerId, código) y recibe el
+// precio final por unidad (netlify/functions/coupon.js y referral.js, que
+// usan lib/pricing.js). Con un precio inválido (no menor al de lista) no se
+// aplica descuento.
+function serverPrice(value) {
+  const p = Number(value);
+  return (p > 0 && p <= planPrice) ? Math.round(p * 100) / 100 : planPrice;
 }
 
 async function applyCode() {
@@ -267,19 +162,6 @@ async function applyCode() {
     errorEl.style.display = "block"; return;
   }
 
-  // 1. Check internal coupons first
-  const coupon = COUPONS[code];
-  if (coupon) {
-    appliedCoupon = { ...coupon, code };
-    appliedReferral = null;
-    finalPrice = calculateCouponPrice(planPrice, coupon, offerId);
-    successEl.innerHTML = `✅ Código <strong>${code}</strong> aplicado — ${coupon.description}`;
-    successEl.style.display = "flex";
-    input.disabled = true;
-    btn.disabled = true; btn.textContent = "Aplicado";
-    updateSummary(); rebuildPayPalButton(); return;
-  }
-
   // 1.5 Cupones: se validan en el servidor (país/fecha/lista de códigos — validado en el
   //     servidor porque el país/fecha del comprador no se puede confiar
   //     al navegador). Si no es un cupón de este tipo, sigue al paso 2.
@@ -288,20 +170,14 @@ async function applyCode() {
     const gr = await fetch("/.netlify/functions/coupon", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, offerId }),
     });
     const gdata = await gr.json();
     if (gdata.valid) {
-      const geoCoupon = {
-        type: gdata.type,
-        paypalFee: gdata.paypalFee,
-        profitShare: gdata.profitShare,
-        discount: gdata.discount,
-        description: gdata.description,
-      };
+      const geoCoupon = { description: gdata.description };
       appliedCoupon = { ...geoCoupon, code };
       appliedReferral = null;
-      finalPrice = calculateCouponPrice(planPrice, geoCoupon, offerId);
+      finalPrice = serverPrice(gdata.finalPrice);
       successEl.innerHTML = `✅ Código <strong>${code}</strong> aplicado — ${geoCoupon.description}`;
       successEl.style.display = "flex";
       input.disabled = true;
@@ -316,6 +192,7 @@ async function applyCode() {
         wrong_country: "Este código solo está disponible para compras desde Panamá.",
         country_undetectable: gdata.message || "No se pudo verificar tu ubicación. Intenta de nuevo.",
         rate_limited: gdata.message || "Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
+        bad_request: "No se pudo aplicar el código a este plan. Recarga la página e inténtalo de nuevo.",
       };
       errorEl.textContent = messages[gdata.reason] || "Código no disponible.";
       errorEl.style.display = "block";
@@ -332,7 +209,7 @@ async function applyCode() {
     const r = await fetch("/.netlify/functions/referral?action=validate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, offerId }),
     });
     const data = await r.json();
     if (!r.ok || !data.valid) {
@@ -343,7 +220,7 @@ async function applyCode() {
     // Valid referral
     appliedReferral = { code, referrer_name: data.referrer.name, discount: data.discount };
     appliedCoupon = null;
-    finalPrice = applyPriceFloor(planPrice, Math.round(planPrice * (1 - data.discount) * 100) / 100, offerId);
+    finalPrice = serverPrice(data.finalPrice);
     successEl.innerHTML = `✅ Código de referido <strong>${code}</strong> aplicado — 5% de descuento`;
     successEl.style.display = "flex";
     input.disabled = true;

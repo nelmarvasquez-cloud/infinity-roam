@@ -16,6 +16,21 @@ const ALLOWED_GET = [
 const ALLOWED_POST = ["/esim/purchases", "/topups/purchases"];
 const TX_RE = /^[A-Za-z0-9-]{6,60}$/;
 
+// Zendit devuelve en las ofertas de eSIM el costo de la cuenta (cost) y el margen
+// (price.margin / cost.discount), con los que se deduce el costo real. El navegador
+// no los necesita (el precio de venta sale de zendit_prices.json / del catálogo),
+// así que se eliminan antes de responder. Solo aplica a /esim/offers*.
+function stripEsimCosts(data) {
+  const clean = (o) => {
+    if (!o || typeof o !== "object") return o;
+    delete o.cost;
+    if (o.price && typeof o.price === "object") { delete o.price.margin; delete o.price.fee; delete o.price.feePct; }
+    return o;
+  };
+  if (data && Array.isArray(data.list)) data.list.forEach(clean); else clean(data);
+  return data;
+}
+
 function httpsRequest(url, method, headers, body) {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(url);
@@ -162,6 +177,8 @@ exports.handler = async function (event) {
       }
       data = { rawResponse: str.substring(0, 200) };
     }
+
+    if (method === "GET" && pathOnly.startsWith("/esim/offers")) stripEsimCosts(data);
 
     return {
       statusCode: result.status,

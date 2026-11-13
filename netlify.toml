@@ -109,6 +109,14 @@
   status = 404
   force = true
 
+# Costo de cada plan (Tier 2): solo lo leen las funciones del servidor (se empaqueta con
+# ellas). El navegador ya no lo necesita: el descuento se calcula en el servidor.
+[[redirects]]
+  from = "/zendit_tier2.json"
+  to = "/"
+  status = 404
+  force = true
+
 [[redirects]]
   from = "/package.json"
   to = "/"

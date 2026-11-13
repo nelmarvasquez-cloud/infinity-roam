@@ -8,6 +8,7 @@
 const https = require("https");
 const { corsHeaders, internalHeaders, rateLimited, clientIp } = require("./lib/security");
 const paypal = require("./lib/paypal-verify");
+const pricing = require("./lib/pricing");
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -109,7 +110,11 @@ exports.handler = async function (event) {
     if (!r.data || r.data.length === 0)
       return res(400, { error: "Código de referido inválido o inactivo" });
 
-    return res(200, { valid: true, referrer: r.data[0], discount: REFERRAL_DISCOUNT });
+    // Si el navegador manda offerId, se devuelve el precio final por unidad (con el piso de
+    // precio aplicado en el servidor; los costos nunca llegan al navegador).
+    const quote = pricing.parseQuote(body);
+    const finalPrice = quote ? pricing.referralPrice(quote.listPrice, quote.offerId) : undefined;
+    return res(200, { valid: true, referrer: r.data[0], discount: REFERRAL_DISCOUNT, finalPrice });
   }
 
   // ── VALIDATE REGISTRATION TOKEN (public) ──────────────────
