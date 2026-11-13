@@ -6,7 +6,8 @@
 // ============================================================
 
 const https = require("https");
-const { corsHeaders, internalHeaders, rateLimited, clientIp } = require("./lib/security");
+const crypto = require("crypto");
+const { corsHeaders, internalHeaders, rateLimited, clientIp, adminAuth, escapeHtml } = require("./lib/security");
 const paypal = require("./lib/paypal-verify");
 const pricing = require("./lib/pricing");
 
@@ -83,10 +84,33 @@ async function sendEmail({ to_email, to_name, subject, html_body, message }) {
 
 // ── Token helpers ─────────────────────────────────────────────
 function randomToken(len = 24) {
+  // Los links de invitación dan acceso al registro: se generan con aleatoriedad criptográfica
+  // (antes Math.random, que es predecible).
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   let t = "";
-  for (let i = 0; i < len; i++) t += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < len; i++) t += chars[crypto.randomInt(chars.length)];
   return t;
+}
+
+// ── Datos que escribe el solicitante (público): se limpian y validan en el servidor ──
+// Antes se guardaban tal cual y el panel admin los mostraba sin escapar (código inyectable).
+const EMAIL_RE = /^[^\s@<>"'`]+@[^\s@<>"'`]+\.[^\s@<>"'`]+$/;
+const PHONE_RE = /^[0-9+()\-\s.]{5,25}$/;
+const TOKEN_RE = /^[A-Za-z0-9_-]{8,80}$/;
+function cleanField(v, max) {
+  return String(v == null ? "" : v).replace(/[<>`\u0000-\u001f\u007f]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
+}
+// Devuelve { error } o { name, lastname, email, phone, paypal_email }.
+function parseApplicant(body, { phoneRequired }) {
+  const name = cleanField(body.name, 60), lastname = cleanField(body.lastname, 60);
+  const email = cleanField(body.email, 120).toLowerCase();
+  const phone = cleanField(body.phone, 25);
+  const paypal = cleanField(body.paypal_email, 120).toLowerCase();
+  if (!name || !lastname || !email) return { error: "Nombre, apellido y email son requeridos" };
+  if (!EMAIL_RE.test(email)) return { error: "Email inválido" };
+  if (paypal && !EMAIL_RE.test(paypal)) return { error: "Email de PayPal inválido" };
+  if ((phoneRequired || phone) && !PHONE_RE.test(phone)) return { error: "Teléfono inválido" };
+  return { name, lastname, email, phone, paypal_email: paypal || email };
 }
 
 // ── Main handler ─────────────────────────────────────────────
@@ -106,7 +130,9 @@ exports.handler = async function (event) {
     if (!code) return res(400, { error: "Código requerido" });
     if (!/^[A-Z0-9_-]{2,40}$/.test(code)) return res(400, { error: "Código de referido inválido o inactivo" });
 
-    const r = await supabase("GET", `referrers?code=eq.${code}&status=eq.active&select=id,name,code,credit_balance`);
+    // Solo se necesita saber si existe y está activo: no se pide ni se devuelve nombre, id
+    // ni saldo de crédito del referidor (este endpoint es público y los códigos se pueden probar).
+    const r = await supabase("GET", `referrers?code=eq.${code}&status=eq.active&select=id`);
     if (!r.data || r.data.length === 0)
       return res(400, { error: "Código de referido inválido o inactivo" });
 
@@ -114,13 +140,15 @@ exports.handler = async function (event) {
     // precio aplicado en el servidor; los costos nunca llegan al navegador).
     const quote = pricing.parseQuote(body);
     const finalPrice = quote ? pricing.referralPrice(quote.listPrice, quote.offerId) : undefined;
-    return res(200, { valid: true, referrer: r.data[0], discount: REFERRAL_DISCOUNT, finalPrice });
+    // `referrer: {}` se mantiene vacío para no romper páginas de pago abiertas con la versión anterior (leen referrer.name).
+    return res(200, { valid: true, referrer: {}, discount: REFERRAL_DISCOUNT, finalPrice });
   }
 
   // ── VALIDATE REGISTRATION TOKEN (public) ──────────────────
   if (action === "validate-token") {
-    const token = body.token || "";
+    const token = String(body.token || "");
     if (!token) return res(400, { error: "Token requerido" });
+    if (!TOKEN_RE.test(token)) return res(400, { error: "Este enlace no es válido o ha expirado" });
 
     const r = await supabase("GET", `invite_tokens?token=eq.${token}&used=eq.false&select=*`);
     if (!r.data || r.data.length === 0)
@@ -140,9 +168,11 @@ exports.handler = async function (event) {
   // el sitio (footer / confirmación de compra) y quiere solicitar unirse,
   // en vez de haber recibido un link personalizado del admin.
   if (action === "request-join") {
-    const { name, lastname, email, phone, paypal_email } = body;
-    if (!name || !lastname || !email)
-      return res(400, { error: "Nombre, apellido y email son requeridos" });
+    // Público y sin token: límite estricto por IP (evita llenar el panel de solicitudes basura).
+    if (rateLimited("ref-join:" + clientIp(event), 5, 60 * 60 * 1000)) return res(429, { error: "Demasiadas solicitudes. Inténtalo más tarde." });
+    const ap = parseApplicant(body, { phoneRequired: false });
+    if (ap.error) return res(400, { error: ap.error });
+    const { name, lastname, email, phone, paypal_email } = ap;
 
     const er = await supabase("GET", `referrers?email=eq.${encodeURIComponent(email)}&select=id`);
     if (er.data && er.data.length > 0)
@@ -150,7 +180,7 @@ exports.handler = async function (event) {
 
     const nr = await supabase("POST", "referrers", {
       name, lastname, email, phone: phone || "",
-      paypal_email: paypal_email || email,
+      paypal_email,
       status: "pending",
       credit_balance: 0,
       code: null,
@@ -162,10 +192,10 @@ exports.handler = async function (event) {
       to_name: "Nelmar",
       subject: `Nueva solicitud de referido (auto-registro, sin invitación): ${name} ${lastname}`,
       email_body: `<p><strong>Alguien solicitó unirse al programa de referidos directamente desde el sitio</strong> (sin link de invitación).</p>
-        <p>Nombre: <strong>${name} ${lastname}</strong><br/>
-        Email: ${email}<br/>
-        PayPal: ${paypal_email || email}<br/>
-        Teléfono: ${phone || "(no proporcionado)"}</p>
+        <p>Nombre: <strong>${escapeHtml(name)} ${escapeHtml(lastname)}</strong><br/>
+        Email: ${escapeHtml(email)}<br/>
+        PayPal: ${escapeHtml(paypal_email)}<br/>
+        Teléfono: ${escapeHtml(phone || "(no proporcionado)")}</p>
         <p><a href="https://infinity-roam.com/admin-ir.html" style="background:#000;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:700">Ir al panel admin →</a></p>`,
     });
 
@@ -174,9 +204,12 @@ exports.handler = async function (event) {
 
   // ── REGISTER REFERRAL SIGNUP (public) ─────────────────────
   if (action === "signup") {
-    const { token, name, lastname, email, phone, paypal_email } = body;
-    if (!token || !name || !lastname || !email || !phone)
-      return res(400, { error: "Todos los campos son requeridos" });
+    if (rateLimited("ref-signup:" + clientIp(event), 10, 60 * 60 * 1000)) return res(429, { error: "Demasiadas solicitudes. Inténtalo más tarde." });
+    const token = String(body.token || "");
+    const ap = parseApplicant(body, { phoneRequired: true });
+    if (!token || ap.error) return res(400, { error: ap.error || "Todos los campos son requeridos" });
+    if (!TOKEN_RE.test(token)) return res(400, { error: "Enlace inválido o expirado" });
+    const { name, lastname, email, phone, paypal_email } = ap;
 
     // Validate token
     const tr = await supabase("GET", `invite_tokens?token=eq.${token}&used=eq.false&select=*`);
@@ -191,7 +224,7 @@ exports.handler = async function (event) {
     // Create referrer (pending)
     const nr = await supabase("POST", "referrers", {
       name, lastname, email, phone,
-      paypal_email: paypal_email || email, // usa el mismo email si no especifica otro
+      paypal_email, // ya es el mismo email si no especificó otro (parseApplicant)
       status: "pending",
       credit_balance: 0,
       code: null,
@@ -206,10 +239,10 @@ exports.handler = async function (event) {
       to_name: "Nelmar",
       subject: `Nueva solicitud de referido: ${name} ${lastname}`,
       email_body: `<p><strong>Nueva solicitud de referido</strong></p>
-        <p>Nombre: <strong>${name} ${lastname}</strong><br/>
-        Email: ${email}<br/>
-        PayPal: ${paypal_email || email}<br/>
-        Teléfono: ${phone}</p>
+        <p>Nombre: <strong>${escapeHtml(name)} ${escapeHtml(lastname)}</strong><br/>
+        Email: ${escapeHtml(email)}<br/>
+        PayPal: ${escapeHtml(paypal_email)}<br/>
+        Teléfono: ${escapeHtml(phone)}</p>
         <p><a href="https://infinity-roam.com/admin-ir.html" style="background:#000;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:700">Ir al panel admin →</a></p>`,
     });
 
@@ -343,9 +376,9 @@ exports.handler = async function (event) {
       email_body: `
         <h2 style="margin:0 0 16px">Solicitud de liquidación de crédito</h2>
         <table style="width:100%;font-size:0.9rem">
-          <tr><td style="color:#888;padding:6px 0">Referidor</td><td style="font-weight:700">${referrer.name} ${referrer.lastname}</td></tr>
-          <tr><td style="color:#888;padding:6px 0">Código</td><td style="font-weight:700">${code}</td></tr>
-          <tr><td style="color:#888;padding:6px 0">PayPal</td><td style="color:#2864E6">${referrer.paypal_email || referrer.email}</td></tr>
+          <tr><td style="color:#888;padding:6px 0">Referidor</td><td style="font-weight:700">${escapeHtml(referrer.name)} ${escapeHtml(referrer.lastname)}</td></tr>
+          <tr><td style="color:#888;padding:6px 0">Código</td><td style="font-weight:700">${escapeHtml(code)}</td></tr>
+          <tr><td style="color:#888;padding:6px 0">PayPal</td><td style="color:#2864E6">${escapeHtml(referrer.paypal_email || referrer.email)}</td></tr>
           <tr><td style="color:#888;padding:6px 0">Saldo a pagar</td><td style="font-size:1.4rem;font-weight:800;color:#34d399">$${referrer.credit_balance.toFixed(2)}</td></tr>
         </table>
         <p style="margin-top:20px">
@@ -362,10 +395,9 @@ exports.handler = async function (event) {
   // ─────────────────────────────────────────────────────────────
   // ADMIN ACTIONS — require password
   // ─────────────────────────────────────────────────────────────
-  const authHeader = event.headers?.authorization || "";
-  const providedPw = authHeader.replace("Bearer ", "").trim();
-  if (!ADMIN_PASSWORD || providedPw !== ADMIN_PASSWORD)
-    return res(401, { error: "No autorizado" });
+  const authState = adminAuth(event, [ADMIN_PASSWORD]);
+  if (authState === "locked") return res(429, { error: "Demasiados intentos. Espera unos minutos." });
+  if (authState !== "ok") return res(401, { error: "No autorizado" });
 
   // ── GENERATE INVITE TOKEN ──────────────────────────────────
   if (action === "generate-token") {
@@ -414,7 +446,7 @@ exports.handler = async function (event) {
     // Send welcome email — email_body contiene HTML completo para el template
     const welcomeBody = `
       <h2 style="font-size:1.4rem;margin-bottom:8px">🎉 ¡Bienvenido al programa de referidos!</h2>
-      <p>Hola <strong>${referrer.name}</strong>, tu solicitud fue aprobada. Ya eres parte del programa de referidos de Infinity Roam.</p>
+      <p>Hola <strong>${escapeHtml(referrer.name)}</strong>, tu solicitud fue aprobada. Ya eres parte del programa de referidos de Infinity Roam.</p>
       <div style="background:#f5f5f7;border-radius:12px;padding:24px;margin:24px 0;text-align:center">
         <p style="margin:0 0 8px;color:#888;font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em">Tu código de referido</p>
         <div style="font-size:2.2rem;font-weight:900;letter-spacing:.15em;font-family:monospace">${cleanCode}</div>
@@ -508,7 +540,7 @@ exports.handler = async function (event) {
       to_email: referrer.email,
       to_name: `${referrer.name} ${referrer.lastname}`,
       subject: "Actualización sobre tu solicitud — Infinity Roam",
-      email_body: `<p>Hola <strong>${referrer.name}</strong>,</p>
+      email_body: `<p>Hola <strong>${escapeHtml(referrer.name)}</strong>,</p>
         <p>Gracias por tu interés en el programa de referidos de Infinity Roam.</p>
         <p>En este momento no podemos procesar tu solicitud. Si tienes preguntas, contáctanos por WhatsApp o escríbenos a sales@infinity-roam.com.</p>
         <p>El equipo de Infinity Roam</p>`,

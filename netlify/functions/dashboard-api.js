@@ -7,6 +7,7 @@
 //  Protegido con la misma contraseña de admin que referral.js.
 // ============================================================
 
+const { adminAuth } = require("./lib/security");
 const ga4 = require("./lib/ga4-client");
 const metaAds = require("./lib/meta-ads-client");
 const { normalizeReport, normalizeSingleRow, classifyChannel } = require("./lib/normalize");
@@ -86,11 +87,11 @@ exports.handler = async function (event) {
   if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
 
   // ── Auth: acepta la contraseña de admin, o la contraseña dedicada del dashboard ──
-  const authHeader = event.headers?.authorization || "";
-  const providedPw = authHeader.replace("Bearer ", "").trim();
-  const isAdmin = ADMIN_PASSWORD && providedPw === ADMIN_PASSWORD;
-  const isDashboardUser = DASHBOARD_PASSWORD && providedPw === DASHBOARD_PASSWORD;
-  if (!isAdmin && !isDashboardUser) {
+  const authState = adminAuth(event, [ADMIN_PASSWORD, DASHBOARD_PASSWORD]);
+  if (authState === "locked") {
+    return { statusCode: 429, headers, body: JSON.stringify({ error: "Demasiados intentos. Espera unos minutos." }) };
+  }
+  if (authState !== "ok") {
     return { statusCode: 401, headers, body: JSON.stringify({ error: "No autorizado" }) };
   }
 

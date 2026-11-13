@@ -11,6 +11,7 @@
 //  Sin dependencias npm — firma el JWT con el módulo crypto nativo.
 // ============================================================
 
+const { adminAuth } = require("./lib/security");
 const crypto = require("crypto");
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -83,9 +84,11 @@ exports.handler = async function (event) {
   if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
 
   // ── Auth: misma contraseña que el resto del panel admin ──
-  const authHeader = event.headers?.authorization || "";
-  const providedPw = authHeader.replace("Bearer ", "").trim();
-  if (!ADMIN_PASSWORD || providedPw !== ADMIN_PASSWORD) {
+  const authState = adminAuth(event, [ADMIN_PASSWORD]);
+  if (authState === "locked") {
+    return { statusCode: 429, headers, body: JSON.stringify({ error: "Demasiados intentos. Espera unos minutos." }) };
+  }
+  if (authState !== "ok") {
     return { statusCode: 401, headers, body: JSON.stringify({ error: "No autorizado" }) };
   }
 

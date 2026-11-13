@@ -131,6 +131,14 @@
 </div>
 
 <script>
+// Escapa texto que viene de fuera (utm_* de GA4, nombres de campañas y planes, países) antes de
+// meterlo en innerHTML: un utm_source con código no debe ejecutarse en este panel.
+function esc(v) {
+  return String(v == null ? "" : v)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
 let AUTH = "";
 let lastData = null;
 
@@ -175,7 +183,7 @@ async function loadDashboard() {
     const data = await r.json();
     renderDashboard(data);
   } catch (e) {
-    content.innerHTML = `<div class="empty-state">❌ Error de conexión: ${e.message}</div>`;
+    content.innerHTML = `<div class="empty-state">❌ Error de conexión: ${esc(e.message)}</div>`;
   }
 }
 
@@ -260,8 +268,8 @@ function renderDashboard(data) {
     ${data.traffic.map(t => `
       <tr>
         <td><strong>${t.channel}</strong></td>
-        <td style="color:var(--gray)">${t.source} / ${t.medium}</td>
-        <td>${t.campaign === "(not set)" ? "—" : t.campaign}</td>
+        <td style="color:var(--gray)">${esc(t.source)} / ${esc(t.medium)}</td>
+        <td>${t.campaign === "(not set)" ? "—" : esc(t.campaign)}</td>
         <td>${fmtNum(t.sessions)}</td>
         <td>${t.engagementRate}%</td>
         <td>${fmtMoney(t.revenue)}</td>
@@ -277,7 +285,7 @@ function renderDashboard(data) {
       const flagged = share >= 15 && c.purchases === 0 && c.sessions >= 10;
       return `
       <tr class="${flagged ? "highlight-row" : ""}">
-        <td><strong>${c.campaign === "(not set)" ? "(sin campaña)" : c.campaign}</strong><br/><span style="color:var(--gray);font-size:.75rem">${c.source}/${c.medium}</span></td>
+        <td><strong>${c.campaign === "(not set)" ? "(sin campaña)" : esc(c.campaign)}</strong><br/><span style="color:var(--gray);font-size:.75rem">${esc(c.source)}/${esc(c.medium)}</span></td>
         <td>${fmtNum(c.sessions)}</td>
         <td>${fmtNum(c.view_item)}</td>
         <td>${fmtNum(c.add_to_cart)}</td>
@@ -316,7 +324,7 @@ function renderDashboard(data) {
     ${data.products.slice(0,15).map(p => {
       const flagged = p.views >= 20 && p.conversion_rate < 1;
       return `<tr class="${flagged ? "highlight-row" : ""}">
-        <td>${p.plan_name}</td><td>${fmtNum(p.views)}</td><td>${fmtNum(p.added_to_cart)}</td><td>${fmtNum(p.checked_out)}</td><td>${fmtNum(p.purchases)}</td><td>${fmtMoney(p.revenue)}</td>
+        <td>${esc(p.plan_name)}</td><td>${fmtNum(p.views)}</td><td>${fmtNum(p.added_to_cart)}</td><td>${fmtNum(p.checked_out)}</td><td>${fmtNum(p.purchases)}</td><td>${fmtMoney(p.revenue)}</td>
         <td>${p.conversion_rate}% ${flagged ? '<span class="badge badge-danger">Interés sin conversión</span>' : ""}</td>
       </tr>`;
     }).join("")}
@@ -392,7 +400,7 @@ function renderDashboard(data) {
 
   // ── 9. Países / Dispositivos ──
   const countriesHTML = data.countryBreakdown.slice(0,10).map(c => `
-    <tr><td>${c.country}</td><td>${fmtNum(c.sessions)}</td><td>${fmtMoney(c.revenue)}</td></tr>`).join("");
+    <tr><td>${esc(c.country)}</td><td>${fmtNum(c.sessions)}</td><td>${fmtMoney(c.revenue)}</td></tr>`).join("");
   const devicesHTML = data.deviceBreakdown.map(d => `
     <tr><td style="text-transform:capitalize">${d.device}</td><td>${fmtNum(d.sessions)}</td><td>${fmtNum(d.product_views)}</td><td>${fmtNum(d.checkout)}</td><td>${fmtNum(d.purchases)}</td>
     <td>${d.conversion_rate_pct}%</td></tr>`).join("");
@@ -410,7 +418,7 @@ function renderDashboard(data) {
     </div>
     ${ma.campaigns && ma.campaigns.length ? `
     <table style="margin-top:20px"><tr><th>Campaña</th><th>Gasto</th><th>Impresiones</th><th>Clics</th><th>CTR</th><th>CPC</th></tr>
-    ${ma.campaigns.map(c => `<tr><td>${c.campaign}</td><td>${fmtMoney(c.spend)}</td><td>${fmtNum(c.impressions)}</td><td>${fmtNum(c.clicks)}</td><td>${c.ctr}%</td><td>${fmtMoney(c.cpc)}</td></tr>`).join("")}
+    ${ma.campaigns.map(c => `<tr><td>${esc(c.campaign)}</td><td>${fmtMoney(c.spend)}</td><td>${fmtNum(c.impressions)}</td><td>${fmtNum(c.clicks)}</td><td>${c.ctr}%</td><td>${fmtMoney(c.cpc)}</td></tr>`).join("")}
     </table>` : ""}
     <p style="font-size:.72rem;color:var(--gray);margin-top:10px">CPA/CAC y ROAS combinan el gasto real de Meta con las compras e ingresos ya calculados desde GA4 para este mismo rango de fechas.</p>`;
 
