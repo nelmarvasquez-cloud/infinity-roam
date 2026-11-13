@@ -112,39 +112,63 @@
 
 <script>
 const app = document.getElementById("app");
-const urlCode = new URLSearchParams(window.location.search).get("code") || "";
+const urlCode = (new URLSearchParams(window.location.search).get("code") || "").toUpperCase().slice(0, 40);
+
+// Escapa todo lo que se muestra (el código viene de la URL y los nombres de la base de datos).
+function esc(v) {
+  return String(v == null ? "" : v)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+// Credenciales de la sesión (solo en memoria; se piden de nuevo al recargar).
+let currentCode = "";
+let currentEmail = "";
 
 // ── LOGIN ─────────────────────────────────────────────────────
 function renderLogin(errMsg) {
+  currentCode = ""; currentEmail = "";
   app.innerHTML = `
     <div class="login-wrap">
       <div class="login-icon">💳</div>
       <h1>Mi Saldo</h1>
-      <p>Ingresa tu código de referido para ver tu saldo acumulado y solicitar pagos</p>
-      <input class="code-input" id="code-input" placeholder="TU-CÓDIGO" maxlength="20" value="${urlCode}" />
+      <p>Ingresa tu código de referido y el correo con el que te registraste para ver tu saldo y solicitar pagos</p>
+      <input class="code-input" id="code-input" placeholder="TU-CÓDIGO" maxlength="40" autocomplete="off" value="${esc(urlCode)}" />
+      <input class="code-input" id="email-input" type="email" placeholder="tu@correo.com" maxlength="120" autocomplete="email" style="margin-top:10px;text-transform:none;letter-spacing:normal;font-size:1rem" />
       <button class="btn-primary" id="login-btn" onclick="doLogin()">Ver mi saldo</button>
-      ${errMsg ? `<p class="err-msg">${errMsg}</p>` : ""}
+      ${errMsg ? `<p class="err-msg">${esc(errMsg)}</p>` : ""}
     </div>`;
   const input = document.getElementById("code-input");
+  const emailInput = document.getElementById("email-input");
   if (input) {
     input.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
     input.addEventListener("input", e => { e.target.value = e.target.value.toUpperCase(); });
   }
-  if (urlCode) setTimeout(doLogin, 120);
+  if (emailInput) {
+    emailInput.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+    if (urlCode) emailInput.focus();
+  }
 }
 
 // ── LOAD DATA ─────────────────────────────────────────────────
 async function doLogin() {
   const input = document.getElementById("code-input");
-  const code  = (input ? input.value : urlCode).trim().toUpperCase();
-  if (!code) return;
+  const emailInput = document.getElementById("email-input");
+  const code  = (input ? input.value : "").trim().toUpperCase();
+  const email = (emailInput ? emailInput.value : "").trim().toLowerCase();
+  if (!code || !email) { renderLogin("Escribe tu código y tu correo."); return; }
 
   app.innerHTML = `<div class="loading"><div class="spinner"></div>Cargando tu información...</div>`;
 
   try {
-    const r    = await fetch(`/.netlify/functions/referral?action=get-referrer&code=${encodeURIComponent(code)}`);
+    const r    = await fetch("/.netlify/functions/referral?action=get-referrer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, email }),
+    });
     const data = await r.json();
-    if (!r.ok) { renderLogin(data.error || "Código no encontrado"); return; }
+    if (!r.ok) { renderLogin(data.error || "Código o correo incorrectos"); return; }
+    currentCode = code; currentEmail = email;
     renderPortal(data, code);
   } catch {
     renderLogin("Error de conexión. Intenta de nuevo.");
@@ -164,23 +188,23 @@ function renderPortal(d, code) {
   // ── Balance card ──
   const balanceCard = `
     <div class="balance-card">
-      <div class="balance-name">Hola, ${d.name} ${d.lastname}</div>
+      <div class="balance-name">Hola, ${esc(d.name)} ${esc(d.lastname)}</div>
       <div class="balance-label" style="font-size:.72rem;color:#B0B0B0;text-transform:uppercase;letter-spacing:.08em;margin-top:12px">Saldo disponible</div>
       <div class="balance-amount">$${bal.toFixed(2)} <span>USD</span></div>
       <div class="balance-sub">Acumulado en ventas · Mínimo para cobrar: $${minRedeem}</div>
       <div class="badge ${canRedeem ? "ready" : "pending"}">
         ${canRedeem ? "✅ Listo para solicitar pago" : `⏳ Faltan $${(minRedeem - bal).toFixed(2)} para poder solicitar`}
       </div>
-      ${d.paypal_email ? `<div class="paypal-row">💳 Pago via PayPal a: <strong>${d.paypal_email}</strong></div>` : ""}
+      ${d.paypal_email ? `<div class="paypal-row">💳 Pago via PayPal a: <strong>${esc(d.paypal_email)}</strong></div>` : ""}
     </div>`;
 
   // ── Code card ──
   const codeCard = `
     <div class="code-card">
       <div class="code-label">Tu código de referido</div>
-      <div class="code-val">${code}</div>
+      <div class="code-val">${esc(code)}</div>
       <div class="code-hint">Tus contactos obtienen 5% de descuento · Tú ganas 3% en ventas ≥ $5</div>
-      <button class="btn-copy" onclick="copyCode('${code}')">📋 Copiar código</button>
+      <button class="btn-copy" onclick="copyCode()">📋 Copiar código</button>
     </div>`;
 
   // ── Totals ──
@@ -201,8 +225,8 @@ function renderPortal(d, code) {
     <div class="redeem-card">
       <h3>💰 Solicitar pago</h3>
       <p>Tienes <strong>$${bal.toFixed(2)}</strong> disponibles para cobrar.<br/>
-         Te enviaremos el pago a tu PayPal (<strong>${d.paypal_email || "—"}</strong>) en 24-48 horas hábiles.</p>
-      <button class="btn-request" id="redeem-btn" onclick="requestPayout('${code}', ${bal.toFixed(2)})">
+         Te enviaremos el pago a tu PayPal (<strong>${esc(d.paypal_email || "—")}</strong>) en 24-48 horas hábiles.</p>
+      <button class="btn-request" id="redeem-btn" onclick="requestPayout(${bal.toFixed(2)})">
         Solicitar $${bal.toFixed(2)} → PayPal
       </button>
     </div>` : "";
@@ -234,7 +258,7 @@ function renderPortal(d, code) {
           <div class="row-left">
             <div class="row-title">Pago enviado a PayPal</div>
             <div class="row-date">${fmtDate(p.paid_at)}</div>
-            ${p.note ? `<div class="row-note">${p.note}</div>` : ""}
+            ${p.note ? `<div class="row-note">${esc(p.note)}</div>` : ""}
           </div>
           <div class="amount-neg">-$${parseFloat(p.amount).toFixed(2)}</div>
         </div>`).join("");
@@ -253,12 +277,13 @@ function renderPortal(d, code) {
         <h3>💸 Pagos recibidos (${payouts.length})</h3>
         ${payoutsHTML}
       </div>
-      <button class="back-btn" onclick="renderLogin()">← Cambiar código</button>
+      <button class="back-btn" onclick="renderLogin()">← Cambiar de cuenta</button>
     </div>`;
 }
 
 // ── REQUEST PAYOUT ────────────────────────────────────────────
-async function requestPayout(code, amount) {
+async function requestPayout(amount) {
+  const code = currentCode, email = currentEmail;
   const btn = document.getElementById("redeem-btn");
   if (!btn) return;
   btn.disabled = true;
@@ -268,7 +293,7 @@ async function requestPayout(code, amount) {
     const r    = await fetch("/.netlify/functions/referral?action=request-payout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, email }),
     });
     const data = await r.json();
     if (r.ok) {
@@ -293,8 +318,8 @@ async function requestPayout(code, amount) {
 }
 
 // ── HELPERS ───────────────────────────────────────────────────
-function copyCode(code) {
-  navigator.clipboard.writeText(code).then(() => {
+function copyCode() {
+  navigator.clipboard.writeText(currentCode).then(() => {
     const btns = document.querySelectorAll(".btn-copy");
     btns.forEach(b => { b.textContent = "✅ ¡Copiado!"; });
     setTimeout(() => btns.forEach(b => { b.textContent = "📋 Copiar código"; }), 2000);
