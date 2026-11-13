@@ -66,6 +66,61 @@
 # arquitectura interna, nombres de variables de entorno y la existencia
 # de admin-ir.html) — se removió del deploy, y esta regla evita que
 # vuelva a pasar sin que nadie se dé cuenta.
+# Archivos internos que NO deben ser públicos. El sitio se publica desde la raíz del
+# repositorio, así que sin estas reglas cualquiera puede descargar el código de las
+# funciones (p. ej. /netlify/functions/coupon.js con los códigos de descuento), los
+# scripts de build y el SQL. Las funciones siguen funcionando: se ejecutan en
+# /.netlify/functions/<nombre>, que no pasa por estas rutas. force = true es necesario
+# porque los archivos existen en disco y, sin él, Netlify los serviría primero.
+# Las reglas se evalúan en orden: estas van antes que cualquier otra.
+[[redirects]]
+  from = "/netlify/*"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/docs/*"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/build-blog.js"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/build-guides.js"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/build-topup-countries.js"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/fetch-esim-offers.js"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/"
+  status = 404
+  force = true
+
 # Blog: URLs antiguas del widget de Soro (/blog.html?post=slug) -> URL propia con 301
 [[redirects]]
   from = "/blog.html"
