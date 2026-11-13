@@ -257,7 +257,7 @@ function layout({ title, description, canonical, ogImage, ogType, jsonLd, body, 
   <style>${CSS}</style>
 </head>
 <body>
-<nav class="nav"><a href="/" class="nav-logo notranslate" translate="no">Infinity <span>Roam</span></a><span style="display:flex;gap:10px;align-items:center"><button id="lang-switch" class="lang-switch notranslate" translate="no" type="button" aria-label="Change language">ES</button><a href="/catalog.html" class="nav-cta notranslate" translate="no" data-es="Ver planes →">View plans →</a></span></nav>
+<nav class="nav"><a href="/" class="nav-logo notranslate" translate="no" style="display:flex;align-items:center"><picture><source srcset="/images/logo.webp" type="image/webp"><img src="/images/logo.png" alt="Infinity Roam" width="162" height="34" decoding="async" style="height:34px;width:auto;display:block"></picture></a><span style="display:flex;gap:10px;align-items:center"><button id="lang-switch" class="lang-switch notranslate" translate="no" type="button" aria-label="Change language">ES</button><a href="/catalog.html" class="nav-cta notranslate" translate="no" data-es="Ver planes →">View plans →</a></span></nav>
 ${body}
 <footer><p>© 2026 Infinity Roam · <a href="/">Home</a> · <a href="/catalog.html">Plans</a> · <a href="/guias/">Guías</a> · <a href="/blog/">Blog</a></p></footer>
 ${TRANSLATE}
