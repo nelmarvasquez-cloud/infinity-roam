@@ -5,6 +5,7 @@
 // ============================================================
 
 const TIER2              = require('../../zendit_tier2.json');
+const { listPriceOf }    = require('./lib/pricing');
 const OFFER_COUNTRY      = require('./offer_country.json');
 const OFFER_REGION       = require('./offer_region_meta.json');
 const REGION_COUNTRIES   = require('./region_countries.json');
@@ -72,11 +73,11 @@ exports.handler = async function () {
         coverageCountries:  (!!regionSlug && !country)
                               ? (REGION_COUNTRIES[regionSlug] || [])
                               : null,
-        cost: {
-          fixed:           Math.round(cost * 100),
-          suggestedRetail: Math.round(cost * MARKUP * 100),
-          currencyDivisor: 100,
-        },
+        // Precio de venta al público (USD). El COSTO del plan ya NO se envía al
+        // navegador: este endpoint es público y antes devolvía cost.fixed (= costo
+        // Tier 2). El navegador usa listPrice solo como respaldo cuando el plan
+        // no está en zendit_prices.json (mismo cálculo anterior: costo × markup).
+        listPrice: listPriceOf(offerId, MARKUP),
       });
     }
 

@@ -120,6 +120,8 @@ function detectRegion(offer) {
 }
 
 function getPlanPrice(offer) {
+  // El catálogo del servidor ya no envía costos: trae el precio de venta en listPrice.
+  if (Number(offer.listPrice) > 0) return Number(offer.listPrice).toFixed(2);
   const cost = offer.cost || {};
   const fixed = Number(cost.fixed) || 0;
   const divisor = Number(cost.currencyDivisor) || 100;
@@ -183,7 +185,8 @@ function getPlanPrice(offer) {
   if (ZENDIT_PRICE_MAP && offer.offerId && ZENDIT_PRICE_MAP[offer.offerId]) {
     return ZENDIT_PRICE_MAP[offer.offerId].toFixed(2);
   }
-  // Fallback al markup
+  // Fallback: precio de venta calculado por el servidor (el costo ya no se envía al navegador)
+  if (Number(offer.listPrice) > 0) return Number(offer.listPrice).toFixed(2);
   const cost = offer.cost || {};
   const fixed = Number(cost.fixed) || 0;
   const divisor = Number(cost.currencyDivisor) || 100;

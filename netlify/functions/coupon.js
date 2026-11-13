@@ -27,6 +27,7 @@
 // ============================================================
 
 const { corsHeaders, originAllowed, requestOrigin, rateLimited, clientIp: ipOf } = require("./lib/security");
+const pricing = require("./lib/pricing");
 
 const GEO_COUPONS = {
   // Precio = breakeven + 50% del profit del precio sugerido Zendit
@@ -87,13 +88,17 @@ exports.handler = async function (event, context) {
     return { statusCode: 429, headers, body: JSON.stringify({ valid: false, reason: "rate_limited", message: "Demasiados intentos. Espera un minuto e inténtalo de nuevo." }) };
   }
 
-  let code;
+  let code, reqBody;
   const debug = false; // el modo de diagnóstico por parámetro ya no existe (filtraba datos internos)
   try {
-    ({ code } = JSON.parse(event.body || "{}"));
+    reqBody = JSON.parse(event.body || "{}");
+    code = reqBody.code;
   } catch (e) {
     return { statusCode: 400, headers, body: JSON.stringify({ valid: false, reason: "Solicitud inválida" }) };
   }
+  // El navegador manda el plan (offerId + precio de lista) y recibe SOLO el precio final:
+  // los parámetros del cupón (comisión, % de ganancia, descuento) y los costos nunca salen del servidor.
+  const quote = pricing.parseQuote(reqBody);
 
   const diag = {}; // diagnóstico crudo — solo se devuelve si debug=true
 
@@ -116,20 +121,26 @@ exports.handler = async function (event, context) {
     };
   }
 
-  // Cupones sin restricción de país: válidos de inmediato.
-  if (!coupon.allowedCountryCode) {
+  // Respuesta de cupón válido: solo descripción y precio final por unidad.
+  const validResponse = (extra = {}) => {
+    if (!quote) {
+      return { statusCode: 200, headers, body: JSON.stringify({ valid: false, reason: "bad_request" }) };
+    }
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         valid: true,
-        type: coupon.type,
-        paypalFee: coupon.paypalFee,
-        profitShare: coupon.profitShare,
-        discount: coupon.discount,
         description: coupon.description,
+        finalPrice: pricing.couponPrice(quote.listPrice, coupon, quote.offerId),
+        ...extra,
       }),
     };
+  };
+
+  // Cupones sin restricción de país: válidos de inmediato.
+  if (!coupon.allowedCountryCode) {
+    return validResponse();
   }
 
   // ── 2. País del visitante ──
@@ -211,21 +222,6 @@ exports.handler = async function (event, context) {
     };
   }
 
-  // ── Todo válido: devolver los parámetros para calcular el precio
-  //    (reutiliza exactamente la misma fórmula/función que ya usa
-  //    INFINITYDEAL en checkout.js — calculateCouponPrice) ──
-  return {
-    statusCode: 200,
-    headers,
-    body: JSON.stringify({
-      valid: true,
-      type: coupon.type,
-      paypalFee: coupon.paypalFee,
-      profitShare: coupon.profitShare,
-      discount: coupon.discount,
-      description: coupon.description,
-      detected_country: detectedCountry,
-      ...(debug ? { _debug: diag } : {}),
-    }),
-  };
+  // ── Todo válido: el precio final se calcula aquí (lib/pricing.js) ──
+  return validResponse({ detected_country: detectedCountry });
 };
