@@ -7,7 +7,7 @@
 
 const https = require("https");
 const crypto = require("crypto");
-const { corsHeaders, internalHeaders, rateLimited, clientIp, adminAuth, escapeHtml } = require("./lib/security");
+const { corsHeaders, internalHeaders, rateLimited, clientIp, adminAuth, escapeHtml, safeEqual } = require("./lib/security");
 const paypal = require("./lib/paypal-verify");
 const pricing = require("./lib/pricing");
 
@@ -111,6 +111,26 @@ function parseApplicant(body, { phoneRequired }) {
   if (paypal && !EMAIL_RE.test(paypal)) return { error: "Email de PayPal inválido" };
   if ((phoneRequired || phone) && !PHONE_RE.test(phone)) return { error: "Teléfono inválido" };
   return { name, lastname, email, phone, paypal_email: paypal || email };
+}
+
+// ── Acceso de un referidor a su portal: código + correo registrado ──
+// El código se comparte con los compradores, así que por sí solo NO identifica al dueño:
+// se exige además el correo con el que se registró. Mismo mensaje para código o correo
+// incorrectos (no revela si el código existe) y límites por IP y por código.
+const CODE_RE = /^[A-Z0-9_-]{2,40}$/;
+async function authReferrer(event, body, fields) {
+  const code = String(body.code || "").toUpperCase().trim();
+  const email = String(body.email || "").toLowerCase().trim();
+  if (rateLimited("ref-portal-ip:" + clientIp(event), 15, 15 * 60 * 1000))
+    return { err: res(429, { error: "Demasiados intentos. Inténtalo en unos minutos." }) };
+  const BAD = { err: res(400, { error: "Código o correo incorrectos" }) };
+  if (!CODE_RE.test(code) || !EMAIL_RE.test(email) || email.length > 120) return BAD;
+  if (rateLimited("ref-portal-code:" + code, 10, 15 * 60 * 1000))
+    return { err: res(429, { error: "Demasiados intentos. Inténtalo en unos minutos." }) };
+  const r = await supabase("GET", `referrers?code=eq.${code}&status=eq.active&select=${fields}`);
+  const ref = r.data && r.data[0];
+  if (!ref || !safeEqual(String(ref.email || "").toLowerCase().trim(), email)) return BAD;
+  return { referrer: ref, code };
 }
 
 // ── Main handler ─────────────────────────────────────────────
@@ -320,15 +340,12 @@ exports.handler = async function (event) {
     });
   }
 
-  // ── GET REFERRER PORTAL (public, by code) ─────────────────
+  // ── GET REFERRER PORTAL (código + correo registrado) ──────
   if (action === "get-referrer") {
-    const code = (body.code || event.queryStringParameters?.code || "").toUpperCase().trim();
-    if (!code) return res(400, { error: "Código requerido" });
+    const au = await authReferrer(event, body, "id,name,lastname,email,credit_balance,paypal_email");
+    if (au.err) return au.err;
+    const { referrer, code } = au;
 
-    const r = await supabase("GET", `referrers?code=eq.${code}&status=eq.active&select=id,name,lastname,credit_balance,paypal_email`);
-    if (!r.data || r.data.length === 0) return res(400, { error: "Código no encontrado" });
-
-    const referrer = r.data[0];
 
     // Ventas generadas
     const uses = await supabase("GET",
@@ -355,16 +372,15 @@ exports.handler = async function (event) {
     });
   }
 
-  // ── REQUEST PAYOUT (public — authenticated by code) ────────
+  // ── REQUEST PAYOUT (código + correo registrado) ────────────
   // Solo envía notificación a admin, no modifica saldo
   if (action === "request-payout") {
-    const code = (body.code || "").toUpperCase().trim();
-    if (!code) return res(400, { error: "Código requerido" });
+    const au = await authReferrer(event, body, "id,name,lastname,email,paypal_email,credit_balance");
+    if (au.err) return au.err;
+    const { referrer, code } = au;
+    if (rateLimited("ref-payout:" + code, 3, 60 * 60 * 1000))
+      return res(429, { error: "Ya enviaste varias solicitudes. Te contactaremos pronto." });
 
-    const r = await supabase("GET", `referrers?code=eq.${code}&status=eq.active&select=id,name,lastname,email,paypal_email,credit_balance`);
-    if (!r.data || r.data.length === 0) return res(400, { error: "Código no encontrado" });
-
-    const referrer = r.data[0];
     if (referrer.credit_balance < MIN_CREDIT_REDEEM)
       return res(400, { error: `Necesitas al menos $${MIN_CREDIT_REDEEM} para solicitar un pago` });
 
