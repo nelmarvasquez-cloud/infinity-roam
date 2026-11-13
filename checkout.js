@@ -218,7 +218,7 @@ async function applyCode() {
       btn.disabled = false; btn.textContent = "Aplicar"; return;
     }
     // Valid referral
-    appliedReferral = { code, referrer_name: data.referrer.name, discount: data.discount };
+    appliedReferral = { code, referrer_name: (data.referrer && data.referrer.name) || null, discount: data.discount };
     appliedCoupon = null;
     finalPrice = serverPrice(data.finalPrice);
     successEl.innerHTML = `✅ Código de referido <strong>${code}</strong> aplicado — 5% de descuento`;

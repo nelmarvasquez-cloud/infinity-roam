@@ -4,6 +4,8 @@
 //  (función → función) y límite de frecuencia básico.
 // ============================================================
 
+const crypto = require("crypto");
+
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ||
   "https://infinity-roam.com,https://www.infinity-roam.com")
   .split(",").map((s) => s.trim()).filter(Boolean);
@@ -72,4 +74,37 @@ function clientIp(event) {
     (headerOf(event, "x-forwarded-for").split(",")[0] || "").trim() || "unknown";
 }
 
-module.exports = { originAllowed, requestOrigin, corsHeaders, isInternal, internalHeaders, rateLimited, clientIp, headerOf };
+// Comparación de secretos en tiempo constante (evita deducir la contraseña por el tiempo
+// de respuesta). Compara los hash SHA-256 para que no importe la longitud.
+function safeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || !a || !b) return false;
+  const ha = crypto.createHash("sha256").update(a).digest();
+  const hb = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(ha, hb);
+}
+
+// Autenticación de las páginas de administración (Bearer <contraseña>).
+// Devuelve "ok", "denied" o "locked" (demasiados intentos fallidos desde la misma IP:
+// 10 en 15 minutos; en memoria, por instancia — defensa básica contra fuerza bruta).
+const authFails = new Map();
+function adminAuth(event, secrets) {
+  const ip = clientIp(event);
+  const now = Date.now();
+  const arr = (authFails.get(ip) || []).filter((t) => now - t < 15 * 60 * 1000);
+  if (arr.length >= 10) { authFails.set(ip, arr); return "locked"; }
+  const provided = headerOf(event, "authorization").replace(/^Bearer\s+/i, "").trim();
+  if ((secrets || []).some((sec) => sec && safeEqual(provided, sec))) return "ok";
+  arr.push(now);
+  authFails.set(ip, arr);
+  if (authFails.size > 5000) authFails.clear();
+  return "denied";
+}
+
+// Escapa texto para meterlo en HTML (correos y paneles).
+function escapeHtml(v) {
+  return String(v == null ? "" : v)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+module.exports = { originAllowed, requestOrigin, corsHeaders, isInternal, internalHeaders, rateLimited, clientIp, headerOf, safeEqual, adminAuth, escapeHtml };
