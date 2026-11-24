@@ -66,6 +66,48 @@
 # arquitectura interna, nombres de variables de entorno y la existencia
 # de admin-ir.html) — se removió del deploy, y esta regla evita que
 # vuelva a pasar sin que nadie se dé cuenta.
+# ===== MODO MANTENIMIENTO (2026-11-24) =====
+# Todas las páginas muestran maintenance.html con estado 503 (temporal: Google no
+# desindexa). Siguen activos: imágenes/íconos y las funciones (webhooks de Zendit, reintentos
+# de eSIM, correos de pedidos ya pagados). PARA REABRIR EL SITIO: borrar este bloque
+# completo (hasta "FIN MODO MANTENIMIENTO") y desplegar.
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/images/*"
+  to = "/images/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/icons/*"
+  to = "/icons/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/maintenance.html"
+  to = "/maintenance.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/maintenance.html"
+  status = 503
+  force = true
+# ===== FIN MODO MANTENIMIENTO =====
+
 # Archivos internos que NO deben ser públicos. El sitio se publica desde la raíz del
 # repositorio, así que sin estas reglas cualquiera puede descargar el código de las
 # funciones (p. ej. /netlify/functions/coupon.js con los códigos de descuento), los
