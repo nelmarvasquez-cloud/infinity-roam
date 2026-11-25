@@ -12,6 +12,7 @@
 // ============================================================
 
 const crypto = require("crypto");
+const { originAllowed, requestOrigin, rateLimited, clientIp } = require("./lib/security");
 
 function sha256(value) {
   if (!value) return undefined;
@@ -28,6 +29,10 @@ exports.handler = async function (event) {
 
   if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
   if (event.httpMethod !== "POST") return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
+
+  // Solo desde el sitio y con límite de frecuencia: evita que terceros llenen de eventos falsos tu cuenta de Meta.
+  if (!originAllowed(requestOrigin(event))) return { statusCode: 403, headers, body: JSON.stringify({ error: "forbidden" }) };
+  if (rateLimited("capi:" + clientIp(event), 60, 60000)) return { statusCode: 429, headers, body: JSON.stringify({ error: "rate_limited" }) };
 
   const PIXEL_ID = process.env.META_PIXEL_ID;
   const ACCESS_TOKEN = process.env.META_CONVERSIONS_API_TOKEN;

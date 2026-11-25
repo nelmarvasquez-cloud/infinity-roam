@@ -12,10 +12,29 @@
 // momento enviamos el correo. Más simple y más confiable.
 
 const https = require("https");
-const { internalHeaders } = require("./lib/security");
+const { internalHeaders, escapeHtml } = require("./lib/security");
 const { supabase } = require("./lib/supabase-client");
 
 const SITE_HOST = "infinity-roam.com";
+
+// Consulta el estado REAL de la recarga directamente en Zendit (el webhook no lleva firma:
+// cualquiera podría enviar un POST falso con status "DONE" para disparar correos o cambiar pedidos).
+function zenditGetPurchase(transactionId) {
+  return new Promise((resolve) => {
+    const key = process.env.ZENDIT_API_KEY;
+    if (!key) return resolve({ status: 500, data: null });
+    const req = https.request({
+      hostname: "api.zendit.io", path: `/v1/topups/purchases/${encodeURIComponent(transactionId)}`, method: "GET",
+      headers: { Authorization: key }, timeout: 15000,
+    }, (res) => {
+      let d = ""; res.on("data", (c) => { d += c; });
+      res.on("end", () => { try { resolve({ status: res.statusCode, data: JSON.parse(d || "null") }); } catch { resolve({ status: res.statusCode, data: null }); } });
+    });
+    req.on("timeout", () => req.destroy(new Error("timeout")));
+    req.on("error", () => resolve({ status: 500, data: null }));
+    req.end();
+  });
+}
 
 function httpsPostJson(hostname, path, body) {
   return new Promise((resolve) => {
@@ -42,9 +61,9 @@ exports.handler = async function (event) {
   // que Zendit piense que el webhook falló y lo reintente indefinidamente.
   try {
     const payload = JSON.parse(event.body || "{}");
-    const { transactionId, status, confirmation, error: zenditError, price, priceCurrencyDivisor } = payload;
+    const { transactionId } = payload;
 
-    if (!transactionId) {
+    if (!transactionId || !/^[A-Za-z0-9-]{6,60}$/.test(String(transactionId))) {
       return { statusCode: 200, body: "ignored (sin transactionId)" };
     }
 
@@ -55,6 +74,19 @@ exports.handler = async function (event) {
     if (!order) {
       console.error(`[topup-webhook] No se encontró la orden local para ${transactionId} — no se puede notificar por correo`);
       return { statusCode: 200, body: "ok (orden no encontrada localmente)" };
+    }
+
+    // No se confía en el contenido del webhook: el estado, la confirmación y el precio salen de Zendit.
+    const real = await zenditGetPurchase(transactionId);
+    if (real.status !== 200 || !real.data || typeof real.data !== "object") {
+      console.error(`[topup-webhook] No se pudo verificar ${transactionId} en Zendit (HTTP ${real.status})`);
+      return { statusCode: 503, body: "verification unavailable" }; // Zendit reintenta
+    }
+    const { status, confirmation, error: zenditError, price, priceCurrencyDivisor } = real.data;
+
+    // Idempotencia: un mismo estado final no vuelve a enviar correo (evita spam por webhooks repetidos).
+    if ((status === "DONE" || status === "FAILED") && order.status === status) {
+      return { statusCode: 200, body: "ok (ya procesado)" };
     }
 
     // Actualizar estado en Supabase
@@ -75,7 +107,7 @@ exports.handler = async function (event) {
       return { statusCode: 200, body: `ok (estado intermedio: ${status})` };
     }
 
-    const priceDisplay = price ? (price / (priceCurrencyDivisor || 100)).toFixed(2) : order.price.toFixed(2);
+    const priceDisplay = (typeof price === "number" && price > 0) ? (price / (Number(priceCurrencyDivisor) || 100)).toFixed(2) : Number(order.price || 0).toFixed(2);
 
     const emailPayload = status === "DONE"
       ? {
@@ -94,9 +126,9 @@ exports.handler = async function (event) {
             <table style="background:#f5f5f7;border-radius:12px;padding:20px;margin:0 0 16px;width:100%;" cellspacing="0" cellpadding="0">
               <tr><td>
                 <p style="font-size:13px;color:#888;margin:0 0 6px;">Número recargado</p>
-                <p style="font-size:14px;font-weight:bold;color:#000;margin:0 0 14px;">${order.recipient_phone}</p>
+                <p style="font-size:14px;font-weight:bold;color:#000;margin:0 0 14px;">${escapeHtml(order.recipient_phone)}</p>
                 <p style="font-size:13px;color:#888;margin:0 0 6px;">Número de confirmación</p>
-                <p style="font-size:13px;font-weight:bold;color:#000;font-family:monospace;margin:0;">${(confirmation && confirmation.confirmationNumber) || "—"}</p>
+                <p style="font-size:13px;font-weight:bold;color:#000;font-family:monospace;margin:0;">${escapeHtml((confirmation && confirmation.confirmationNumber) || "—")}</p>
               </td></tr>
             </table>`,
           china_notice: "",
@@ -114,7 +146,7 @@ exports.handler = async function (event) {
           qr_codes_block: `
             <table style="background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:20px;margin:0 0 16px;width:100%;" cellspacing="0" cellpadding="0">
               <tr><td>
-                <p style="font-size:14px;color:#856404;margin:0;">Tu pago fue procesado, pero la recarga al número ${order.recipient_phone} no se pudo completar${zenditError && zenditError.message ? ": " + zenditError.message : "."} Escríbenos por WhatsApp con tu ID de transacción y te reembolsamos o reintentamos sin costo.</p>
+                <p style="font-size:14px;color:#856404;margin:0;">Tu pago fue procesado, pero la recarga al número ${escapeHtml(order.recipient_phone)} no se pudo completar${zenditError && zenditError.message ? ": " + escapeHtml(zenditError.message) : "."} Escríbenos por WhatsApp con tu ID de transacción y te reembolsamos o reintentamos sin costo.</p>
               </td></tr>
             </table>`,
           china_notice: "",

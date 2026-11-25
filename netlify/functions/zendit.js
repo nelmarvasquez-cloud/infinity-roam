@@ -1,5 +1,5 @@
 const https = require("https");
-const { corsHeaders, rateLimited, clientIp } = require("./lib/security");
+const { corsHeaders, rateLimited, clientIp, originAllowed, requestOrigin, isInternal } = require("./lib/security");
 const paypal = require("./lib/paypal-verify");
 const TIER2 = require("../../zendit_tier2.json"); // costo por offerId (se empaqueta con la función)
 
@@ -15,6 +15,8 @@ const ALLOWED_GET = [
 ];
 const ALLOWED_POST = ["/esim/purchases", "/topups/purchases"];
 const TX_RE = /^[A-Za-z0-9-]{6,60}$/;
+const OFFER_RE = /^[A-Za-z0-9._-]{1,80}$/;
+const PHONE_RE = /^\+?[0-9]{6,15}$/;
 
 // Zendit devuelve en las ofertas de eSIM el costo de la cuenta (cost) y el margen
 // (price.margin / cost.discount), con los que se deduce el costo real. El navegador
@@ -93,20 +95,52 @@ exports.handler = async function (event) {
   if (rateLimited("zendit:" + clientIp(event), 120, 60000)) return json(429, { error: "rate_limited" });
 
   // ── Compras: solo con un pedido de PayPal verificado y no reutilizado ──
+  let forwardBody = body;
   if (method === "POST") {
+    // Interruptor de emergencia: ZENDIT_PURCHASES_DISABLED=true en Netlify detiene toda compra.
+    if (process.env.ZENDIT_PURCHASES_DISABLED === "true") return json(503, { error: "purchases_disabled" });
+
+    // Las compras solo salen de nuestro sitio (o llamadas internas). El Origin lo puede falsificar
+    // un script, así que esto es una capa más; la defensa real es la verificación del pago de abajo.
+    if (!originAllowed(requestOrigin(event)) && !isInternal(event)) return json(403, { error: "forbidden" });
+    if (rateLimited("zendit-buy:" + clientIp(event), 10, 600000)) return json(429, { error: "rate_limited" });
+
     let payload;
     try { payload = JSON.parse(body || "{}"); } catch { return json(400, { error: "invalid_json" }); }
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) return json(400, { error: "invalid_purchase" });
     const kind = pathOnly.startsWith("/esim") ? "esim" : "topup";
     const { offerId, transactionId } = payload;
-    if (!offerId || !TX_RE.test(transactionId || "")) return json(400, { error: "invalid_purchase" });
+    if (!OFFER_RE.test(String(offerId || "")) || !TX_RE.test(String(transactionId || ""))) return json(400, { error: "invalid_purchase" });
 
+    // Se reenvía a Zendit SOLO lo validado (no el cuerpo original): evita campos extra o
+    // claves duplicadas que Zendit pudiera interpretar distinto a como las validamos aquí.
+    if (kind === "esim") {
+      if (!String(offerId).startsWith("ESIM-")) return json(400, { error: "unknown_offer" });
+      forwardBody = JSON.stringify({ offerId, transactionId });
+    } else {
+      const phone = String(payload.recipientPhoneNumber || "");
+      if (!PHONE_RE.test(phone)) return json(400, { error: "invalid_purchase" });
+      const out = { offerId, recipientPhoneNumber: phone, transactionId };
+      if (payload.value != null) {
+        const v = payload.value;
+        if (typeof v !== "object" || typeof v.type !== "string" || !(Number(v.value) > 0)) return json(400, { error: "invalid_purchase" });
+        out.value = { type: v.type, value: Number(v.value) };
+      }
+      forwardBody = JSON.stringify(out);
+    }
+
+    // Sin verificación de pago NO se compra (antes: "modo de transición" que dejaba pasar la compra).
+    // Solo el modo sandbox puede saltarse la verificación.
     if (!paypal.isConfigured()) {
-      console.warn("[zendit] PAYPAL_CLIENT_SECRET no configurado: compra NO verificada (modo de transición)");
+      if (!isSandbox) {
+        console.error("[zendit] PAYPAL_CLIENT_ID/PAYPAL_CLIENT_SECRET no configurados: compra rechazada");
+        return json(503, { error: "payment_verification_unavailable" });
+      }
     } else {
       const orderId = (event.headers["x-paypal-order-id"] || event.headers["X-PayPal-Order-Id"] || "").trim();
       let unitCost = null;
       if (kind === "esim") {
-        const raw = TIER2[offerId];
+        const raw = Object.prototype.hasOwnProperty.call(TIER2, offerId) ? TIER2[offerId] : null;
         unitCost = raw == null ? null : Number(Array.isArray(raw) ? raw[0] : raw);
       } else {
         try {
@@ -139,9 +173,9 @@ exports.handler = async function (event) {
       {
         "Authorization": ZENDIT_KEY,
         "Content-Type": "application/json",
-        "Content-Length": body ? Buffer.byteLength(body) : 0,
+        "Content-Length": forwardBody ? Buffer.byteLength(forwardBody) : 0,
       },
-      body
+      forwardBody
     );
 
     const contentType = result.contentType;
