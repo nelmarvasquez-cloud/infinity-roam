@@ -25,6 +25,16 @@
     Access-Control-Allow-Headers = "Content-Type"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
 
+# Cabeceras de seguridad básicas para todo el sitio.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
 [[headers]]
   for = "/admin-ir.html"
   [headers.values]
@@ -42,11 +52,6 @@
 
 [[headers]]
   for = "/mi-credito.html"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
-[[headers]]
-  for = "/test-email.html"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 

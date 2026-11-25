@@ -43,7 +43,7 @@ exports.handler = async function (event) {
   const transactionId = event.queryStringParameters?.id;
   const imageHeaders = { "Content-Type": "image/png", "Cache-Control": "public, max-age=86400" };
 
-  if (!transactionId) {
+  if (!transactionId || !/^[A-Za-z0-9-]{6,60}$/.test(transactionId)) {
     return { statusCode: 200, headers: imageHeaders, body: BLANK_PNG.toString("base64"), isBase64Encoded: true };
   }
 

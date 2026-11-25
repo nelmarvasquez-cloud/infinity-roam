@@ -5,6 +5,7 @@
 
 const https = require("https");
 const { corsHeaders, originAllowed, requestOrigin, isInternal, rateLimited, clientIp } = require("./lib/security");
+const { supabase } = require("./lib/supabase-client");
 
 const EMAILJS_SERVICE_ID  = process.env.EMAILJS_SERVICE_ID  || "service_3ewebpe";
 const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID || "template_g6lndho";
@@ -20,6 +21,23 @@ const ALLOWED_FIELDS = new Set([
 ]);
 const MAX_FIELD = 60000; // el QR en data-URI puede ser grande
 const EMAIL_RE = /^[^\s@,;<>]{1,64}@[^\s@,;<>]{1,255}\.[^\s@,;<>]{2,}$/;
+const TX_RE = /^[A-Za-z0-9-]{6,60}$/;
+
+// Desde el navegador solo se puede enviar correo de un pedido REAL y pagado: el transaction_id
+// debe existir en paypal_order_uses (eSIM, también sus sub-IDs -1, -2…) o en topup_orders.
+// Sin esto cualquiera podía usar esta función como relay para enviar correo con tu marca.
+async function orderExists(tx) {
+  const base = tx.replace(/-\d{1,3}$/, "");
+  const ids = encodeURIComponent(`(${tx},${base})`);
+  const a = await supabase("GET", `paypal_order_uses?transaction_id=in.${ids}&select=transaction_id&limit=1`);
+  if (a.status !== 200 || !Array.isArray(a.data)) throw new Error("order_lookup_failed");
+  if (a.data.length) return true;
+  const p = await supabase("GET", `paypal_order_uses?transaction_id=like.${encodeURIComponent(base + "-*")}&select=transaction_id&limit=1`);
+  if (p.status === 200 && Array.isArray(p.data) && p.data.length) return true;
+  const t = await supabase("GET", `topup_orders?transaction_id=in.${ids}&select=transaction_id&limit=1`);
+  if (t.status !== 200 || !Array.isArray(t.data)) throw new Error("order_lookup_failed");
+  return t.data.length > 0;
+}
 
 exports.handler = async function (event) {
   const headers = { ...corsHeaders(event), "Content-Type": "application/json" };
@@ -43,6 +61,16 @@ exports.handler = async function (event) {
       const val = typeof v === "string" || typeof v === "number" ? String(v) : "";
       if (val.length > MAX_FIELD) return { statusCode: 413, headers, body: JSON.stringify({ error: "field too large" }) };
       params[k] = typeof v === "number" ? v : val;
+    }
+
+    if (!internal) {
+      const tx = String(raw.transaction_id || "");
+      if (!TX_RE.test(tx)) return { statusCode: 400, headers, body: JSON.stringify({ error: "transaction_id required" }) };
+      if (rateLimited("mail-tx:" + tx, 8, 3600000)) return { statusCode: 429, headers, body: JSON.stringify({ error: "rate_limited_order" }) };
+      let known;
+      try { known = await orderExists(tx); }
+      catch (e) { console.error("[send-email] verificación de pedido falló:", e.message); return { statusCode: 503, headers, body: JSON.stringify({ error: "order_check_unavailable" }) }; }
+      if (!known) return { statusCode: 403, headers, body: JSON.stringify({ error: "unknown_order" }) };
     }
 
     // Frecuencia: por IP y por destinatario (las llamadas internas no se limitan por IP)

@@ -20,9 +20,16 @@ const countryName = params.get("country") || "";
 const recipientPhone = params.get("recipientPhone") || "";
 const senderEmail = params.get("senderEmail") || "";
 
+// ID aleatorio criptográfico (12 caracteres): los IDs de pedido dan acceso al QR/eSIM, no deben ser adivinables.
+function secureRandomId() {
+  const a = new Uint8Array(8);
+  (window.crypto || window.msCrypto).getRandomValues(a);
+  return Array.from(a, (b) => b.toString(36).padStart(2, "0")).join("").toUpperCase().slice(0, 12);
+}
+
 function generateTopupTransactionId() {
   const timestamp = Date.now().toString(36).toUpperCase();
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const random = secureRandomId();
   return `IR-TU-${timestamp}-${random}`;
 }
 
